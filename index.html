@@ -197,7 +197,7 @@ button{cursor:pointer}
 
 <script>
 'use strict';
-const API = 'https://aizvietosana-api.vaitkevix.workers.dev/dl', PINK = 'shd_pin';
+const API = 'https://vaitkevix.cloud/sh/api/dl', PINK = 'shd_pin';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }, del: k => { try { localStorage.removeItem(k); } catch (e) {} } };
