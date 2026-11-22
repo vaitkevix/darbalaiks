@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="lv" data-sh="dl">
+<head>
+<meta charset="utf-8">
+<script>/*SH viena saite: lietotne strādā tikai portālā vaitkevix.cloud/sh. © VAITKEVIX, SIA*/(function(){try{if(window.top!==window)return}catch(e){return}if(/^(localhost|127\.|sh\.test)/.test(location.hostname)||location.protocol==='file:')return;var h=location.hash.slice(1);location.replace('https://vaitkevix.cloud/sh/#dl'+(h?'/'+h:''))})()</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1f4f2">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('sh_theme')==='dark'?'dark':'light'}catch(e){}</script>
+<title>SH | Darba laiks</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- SH | Darba laiks — sētnieki un uzkopēji atzīmējas ar SMS (SAKU <kods> / BEIDZU); adminam objekti pa adresēm: uzkopējs un sētnieks darbā vai nav. © VAITKEVIX, SIA -->
+<style>
+
+:root{--bg:#f1f4f2;--surf:#fff;--surf2:#f3f5f4;--ink:#17201c;--ink2:#4a534f;--ink3:#6d7672;--dark:#17201c;--ondark:#fff;
+  --mint:#d6e8e1;--sand:#f4e4b4;--sky:#d8e6f2;--rose:#f5dbe3;--lilac:#e2ddf2;--ok:#2f5d45;--warn:#6b4a00;--bad:#8a2a3b}
+:root[data-theme="dark"]{--bg:#0b120f;--surf:#151d1a;--surf2:#1b2521;--ink:#eef2ef;--ink2:#b4bdb8;--ink3:#8b958f;--dark:#eef2ef;--ondark:#0b120f;
+  --mint:#1e3a32;--sand:#3d3520;--sky:#1e2f3d;--rose:#3d2530;--lilac:#2c2840;--ok:#8fd1ad;--warn:#f0c46b;--bad:#f3a0b0}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(110px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.top .t{flex:1;min-width:0}
+.top small{display:block;font-size:13px;font-weight:700;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .lg{width:44px;height:44px;border-radius:14px;background:var(--mint);color:var(--ink);display:grid;place-items:center;flex:none}
+.top .bn{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(17px,4.6vw,20px);font-weight:800;letter-spacing:-.03em;line-height:1.15}
+.pt{margin:0 0 14px;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.ib{width:44px;height:44px;border-radius:50%;border:0;background:var(--surf);display:grid;place-items:center;flex:none;color:var(--ink)}
+.ib.dk{background:var(--dark);color:var(--ondark)}
+.card{border-radius:28px;background:var(--surf);padding:16px 18px}
+.mint{background:var(--mint)}.sand{background:var(--sand)}.sky{background:var(--sky)}.rose{background:var(--rose)}.lilac{background:var(--lilac)}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 10px}
+.sec h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:var(--surf);font-size:14px;font-weight:800;text-decoration:none;color:var(--ink);white-space:nowrap}
+.pill.dk{background:var(--dark);color:var(--ondark)}
+.pill.big{min-height:56px;padding:0 22px;font-size:16px}
+.seg{display:flex;gap:6px;padding:6px;border-radius:999px;background:var(--surf);overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{min-height:40px;padding:0 16px;border:0;border-radius:999px;background:transparent;font-size:14px;font-weight:800;white-space:nowrap}
+.seg button.on{background:var(--dark);color:var(--ondark)}
+.banner{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:24px;margin:0 0 12px}
+.banner b{display:block;font-size:14px;font-weight:800}.banner div>span{display:block;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.banner .dot{display:grid;place-items:center;color:var(--ink)}
+.dot{width:40px;height:40px;border-radius:50%;background:var(--surf);display:grid;place-items:center;flex:none}
+.prog .row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink2)}
+.prog .big{display:flex;align-items:baseline;gap:6px;margin-top:4px}.prog .big b{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}.prog .big span{font-size:16px;font-weight:800;color:var(--ink2)}
+.bar{height:8px;border-radius:999px;background:rgba(23,32,28,.15);margin-top:12px;overflow:hidden}.bar i{display:block;height:100%;border-radius:999px;background:var(--ink)}
+.list{display:flex;flex-direction:column;gap:8px}
+.stop{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:22px;background:var(--surf);border:0;width:100%;text-align:left}
+.stop .n{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:14px;font-weight:800;background:var(--surf2)}
+.stop .tx{flex:1;min-width:0}.stop .tx b{display:block;font-size:14.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stop .tx span{display:block;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.chip{flex:none;font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;background:var(--surf2)}
+.chip.wrap{flex:1 1 100%;white-space:normal;border-radius:14px;line-height:1.4}
+.s-done .n{background:var(--mint)}.s-done .chip{color:var(--ok)}
+.s-moved{background:var(--sand)}.s-moved .n,.s-moved .chip{background:var(--surf)}.s-moved .chip{color:var(--warn)}
+.s-cant .n{background:var(--rose)}.s-cant .chip{color:var(--bad)}
+.empty{padding:28px 18px;text-align:center;font-weight:700;color:var(--ink3)}
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:20;width:min(560px,calc(100% - 32px));display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;padding:6px;border-radius:999px;background:var(--surf);box-shadow:0 8px 28px -12px rgba(16,32,26,.4)}
+.tabs button{min-height:48px;border:0;border-radius:999px;background:transparent;font-size:13.5px;font-weight:800}
+.tabs button.on{background:var(--dark);color:var(--ondark)}
+/* kalendārs */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .wd{font-size:12px;font-weight:800;color:var(--ink3);text-align:center;padding:4px 0}
+.cal .d{min-height:84px;border-radius:16px;padding:8px;border:0;text-align:left;display:flex;flex-direction:column;gap:2px;background:var(--surf2)}
+.cal .d b{font-size:15px;font-weight:800}.cal .d span{font-size:12px;font-weight:800}.cal .d small{font-size:11px;font-weight:700;color:var(--ink2)}
+.cal .d.we{background:transparent;opacity:.55}.cal .d.blank{visibility:hidden}
+.cal .d.done{background:var(--mint)}.cal .d.rain{background:var(--sky)}.cal .d.got{background:var(--sand)}
+.cal .d.today{outline:2px solid var(--ink);outline-offset:-2px}.cal .d.sel{outline:2px dashed var(--ink);outline-offset:-2px}
+@media(max-width:560px){.cal .d{min-height:58px;padding:6px}.cal .d small{display:none}.cal .d span{font-size:11px}}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+.grid2{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}.grid2>.main{flex:999 1 560px;min-width:0}.grid2>.side{flex:1 1 300px;min-width:0}
+.log{display:flex;flex-direction:column;gap:8px}.log div{padding:10px 12px;border-radius:16px;background:var(--surf)}
+.log b{display:block;font-size:13.5px;font-weight:800}.log span{font-size:12px;font-weight:700;color:var(--ink2)}
+/* objekti */
+.search{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.search input{flex:1 1 220px;height:48px;border:0;border-radius:999px;background:var(--surf);padding:0 18px;font-size:16px;font-weight:700;min-width:0}
+.obj{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--surf);border:0;width:100%;text-align:left}
+.obj .tx{flex:1;min-width:0}.obj b{display:block;font-size:14.5px;font-weight:800}.obj span{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.obj.off{opacity:.6}
+/* lapas */
+.sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(8,20,16,.45);display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:700px){.sheet-bg{align-items:center}}
+.sheet{width:min(560px,100%);max-height:92vh;overflow:auto;background:var(--bg);border-radius:28px 28px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media(min-width:700px){.sheet{border-radius:28px}}
+.sheet .hd{display:flex;align-items:center;gap:10px;margin:0 0 14px}.sheet .hd h3{margin:0;flex:1;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.f{margin:0 0 12px}.f label,.f .lb{display:block;font-size:13px;font-weight:800;color:var(--ink2);margin:0 0 6px 4px}
+.f input,.f select,.f textarea{width:100%;height:48px;border:0;border-radius:16px;background:var(--surf);padding:0 16px;font-size:16px;font-weight:700}
+.f textarea{height:auto;min-height:80px;padding:12px 16px}
+.row2{display:flex;gap:8px}.row2>*{flex:1;min-width:0}
+.photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.photos .ph{aspect-ratio:1;border-radius:18px;background:var(--surf) center/cover no-repeat;position:relative}
+.photos .add{aspect-ratio:1;border-radius:18px;border:2px dashed #c9d3ce;background:var(--surf);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:800}
+.photos .ph button{position:absolute;top:4px;right:4px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff}
+.checks{border-radius:22px;background:var(--surf);padding:4px}
+.checks label{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 12px;font-size:15px;font-weight:700}
+.checks input{width:22px;height:22px;accent-color:var(--ink);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{min-height:44px;padding:0 14px;border:0;border-radius:999px;background:var(--surf);font-size:13.5px;font-weight:800}
+.chips button.on{background:var(--dark);color:var(--ondark)}
+.acts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px;margin-top:14px}
+.acts button{min-height:56px;border:0;border-radius:999px;font-size:16px;font-weight:800}
+.btn-dk{background:var(--dark);color:var(--ondark)}.btn-rose{background:var(--rose)}.btn-lt{background:var(--surf)}
+.thumbs{display:flex;gap:6px;margin-top:6px}.thumbs img{width:56px;height:56px;border-radius:12px;object-fit:cover;background:var(--surf2)}
+.gate{min-height:100vh;display:grid;place-items:center;padding:20px}
+.gate .card{width:min(380px,100%);text-align:center;padding:28px 22px}
+.gate input{width:100%;height:56px;border:0;border-radius:18px;background:var(--surf2);text-align:center;font-size:22px;font-weight:800;margin:14px 0 10px}
+.gate input::placeholder{font-size:16px;font-weight:700;color:var(--ink3)}
+.gate .err{min-height:20px;color:var(--bad);font-weight:700;font-size:13.5px}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:80;max-width:calc(100% - 32px);padding:12px 18px;border-radius:999px;background:var(--dark);color:var(--ondark);font-weight:800;font-size:14px}
+.toast.err{background:#8a2a3b;color:#fff}
+.skel{height:64px;border-radius:22px;background:var(--surf);opacity:.6;margin-bottom:8px}
+.copy{text-align:center;font-size:11px;font-weight:700;color:var(--ink3);margin:24px 0 0}
+
+/* --- Darba laiks --- */
+.top .lg{background:var(--rose)}
+:root{--g:#2f8a55;--r:#c63d3d;--gbg:var(--mint);--rbg:var(--rose)}
+:root[data-theme="dark"]{--g:#4ade80;--r:#f87171}
+.pt2{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 14px}.pt2 .pt{margin:0}.pt2 small{font-size:13px;font-weight:700;color:var(--ink3)}
+.kp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 12px}@media(max-width:560px){.kp{gap:8px}.kp>button,.kp>div{padding:12px}.kp b{font-size:24px}.kp span{font-size:12px;line-height:1.25;display:block}}
+.kp>button,.kp>div{border:0;text-align:left;border-radius:22px;padding:14px 16px}.kp b{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.05}.kp span{font-size:13px;font-weight:700;color:var(--ink2)}
+.dayb{display:flex;align-items:center;gap:8px;margin:0 0 12px}.dayb .lbl{flex:1;text-align:center;font-weight:800;font-size:15px}
+.legend2{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;font-weight:700;color:var(--ink2);margin:0 0 10px}.legend2 span{display:inline-flex;align-items:center;gap:6px}
+.pd{width:12px;height:12px;border-radius:50%;flex:none;display:inline-block;background:var(--ink3)}.pd.g{background:var(--g)}.pd.r{background:var(--r)}.pd.b{background:transparent;border:2px solid var(--g)}.pd.n{background:var(--surf2);border:1px dashed var(--ink3)}
+.orow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--surf);border:0;width:100%;text-align:left}
+.orow.sel{outline:2px solid var(--ink);outline-offset:-2px}
+.orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
+.roles{display:flex;flex-direction:column;gap:5px;width:170px;flex:none}
+.roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
+@media(max-width:420px){.roles{width:142px}.roles span{font-size:12px}}
+.rc{border-radius:24px;padding:16px 18px;margin:0 0 10px}.rc .h{display:flex;align-items:center;gap:10px}.rc .h b{font-size:18px;font-weight:800}.rc .h em{margin-left:auto;font-style:normal;font-size:12.5px;font-weight:800;letter-spacing:.03em}
+.rc p{margin:6px 0 0;font-size:14.5px;font-weight:700;color:var(--ink2)}.rc .pill{margin-top:10px;width:100%}
+.rc.ok{background:var(--gbg)}.rc.ok .h em{color:var(--ok)}.rc.bad{background:var(--rbg)}.rc.bad .h em{color:var(--bad)}.rc.na{background:var(--surf)}
+.wk{display:grid;grid-template-columns:86px repeat(7,minmax(0,1fr));gap:8px 4px;align-items:center;text-align:center;font-size:12px;font-weight:800;color:var(--ink3)}.wk .l{text-align:left;color:var(--ink)}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);font-size:14px;font-weight:700}.kv:first-of-type{border-top:0}
+.kv span:first-child{color:var(--ink2)}.kv b{font-weight:800}
+.smsl{display:flex;gap:10px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}.smsl:first-child{border-top:0}
+.smsl time{font-size:12px;font-weight:700;color:var(--ink3);width:42px;flex:none;font-variant-numeric:tabular-nums;padding-top:2px}
+.smsl .tx{flex:1;min-width:0}.smsl small{display:block;font-size:12px;font-weight:700;color:var(--ink3)}.smsl b{font-size:14px;font-weight:800;word-break:break-word}.smsl.out b{color:var(--ink2);font-weight:700}.smsl.bad b{color:var(--bad)}
+.smsl .d{font-size:11px;font-weight:800;color:var(--ink3);flex:none}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th{font-size:12px;font-weight:800;color:var(--ink3);text-align:left;padding:8px 6px}.tbl td{padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);font-weight:700}
+.tbl .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}.tbl small{display:block;font-size:12px;font-weight:700}.tbl small.r{color:var(--bad)}.tbl small.g{color:var(--ok)}
+.tbx{overflow-x:auto}
+.set .orow{flex-wrap:wrap}.set input.kd{width:84px;height:44px;border:0;border-radius:14px;background:var(--surf2);text-align:center;font-size:16px;font-weight:800}
+.tg{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:0;border-radius:999px;background:var(--surf2);font-size:12.5px;font-weight:800}.tg.on{background:var(--dark);color:var(--ondark)}
+/* dators: sānu izvēlne + saraksts + izvēlētā objekta panelis */
+.side-nav{display:none}
+@media(min-width:1000px){
+  body.has-nav .wrap{max-width:1320px;padding-left:252px}
+  body.has-nav .tabs{display:none}
+  .side-nav{display:flex;flex-direction:column;gap:6px;position:fixed;left:max(16px,calc(50% - 660px));top:16px;width:220px;padding:14px;border-radius:28px;background:var(--surf)}
+  .side-nav button{min-height:46px;border:0;border-radius:999px;background:transparent;text-align:left;padding:0 16px;font-size:14.5px;font-weight:800}
+  .side-nav button.on{background:var(--dark);color:var(--ondark)}
+  .side-nav .sm{font-size:12px;font-weight:700;color:var(--ink3);padding:8px 16px 0}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}.split>.pane{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+}
+.split>.pane:empty{display:none}
+@media(max-width:999px){.split>.pane{display:none}}
+@media print{body *{visibility:hidden}#print,#print *{visibility:visible}#print{position:absolute;inset:0}}
+#print{display:none}@media print{#print{display:block}}
+.stk{width:100%;border-collapse:separate;border-spacing:8mm}.stk td{border:1.5px solid #17201c;border-radius:6mm;padding:7mm;font-family:Manrope,Arial,sans-serif;color:#17201c;width:50%;vertical-align:top;height:62mm}
+.stk h4{margin:0 0 4mm;font-size:17pt}.stk p{margin:2mm 0;font-size:12.5pt;font-weight:700}.stk code{font-family:inherit;background:#17201c;color:#fff;border-radius:2mm;padding:.5mm 2.5mm;font-weight:800}.stk small{font-size:9pt;color:#4a534f}
+
+</style>
+</head>
+<body>
+<section class="gate" id="vGate" hidden>
+  <form class="card" id="gateForm">
+    <h2 style="margin:0;font-size:22px;font-weight:800">SH | Darba laiks</h2>
+    <p style="margin:4px 0 0;color:var(--ink3);font-weight:700;font-size:14px">Ienāciet ar savu portāla PIN</p>
+    <input id="gPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" aria-label="PIN">
+    <div class="err" id="gErr"></div>
+    <button class="pill dk big" style="width:100%" type="submit">Ienākt</button>
+    <p class="copy">© VAITKEVIX, SIA</p>
+  </form>
+</section>
+
+<nav class="side-nav" id="sideNav" aria-label="Sadaļas"></nav>
+<main class="wrap" id="vApp" hidden>
+  <header class="top">
+    <span class="lg" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+    <div class="t"><b class="bn">Darba laiks</b><small id="hdSub">Objekti pa adresēm · SMS</small></div>
+    <button class="ib" id="btnTheme" aria-label="Tumšais režīms"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="ib" id="btnRefresh" aria-label="Atjaunot"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg></button>
+    <button class="ib dk" id="btnMe" aria-label="Profils">··</button>
+  </header>
+  <div id="view"></div>
+  <p class="copy">© VAITKEVIX, SIA</p>
+</main>
+<nav class="tabs" id="tabs" hidden></nav>
+<div id="print"></div>
+
+<script>
+'use strict';
+const API = 'https://aizvietosana-api.vaitkevix.workers.dev/dl', PINK = 'shd_pin';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }, del: k => { try { localStorage.removeItem(k); } catch (e) {} } };
+const S = { pin: ls.get(PINK) || '', tab: 'obj', day: '', f: 'all', q: '', sel: '', D: null, O: null, T: null, set: 'obj', I: null, kam: 'visi' };
+const ROLE = { admin: 'Administrators', vaditajs: 'Pieteicējs', skatitajs: 'Skatītājs' }, RW = { admin: 3, vaditajs: 2, skatitajs: 0 };
+const AM = { uzk: 'Uzkopējs', set: 'Sētnieks' }, WD = ['P', 'O', 'T', 'C', 'Pk', 'S', 'Sv'];
+const MON = ['janvāris', 'februāris', 'marts', 'aprīlis', 'maijs', 'jūnijs', 'jūlijs', 'augusts', 'septembris', 'oktobris', 'novembris', 'decembris'];
+const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+const dow = (d) => { const w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 0 ? 7 : w; };
+const lvLong = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('lv-LV', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
+const lvS = (d) => d ? (+d.slice(8, 10)) + '.' + d.slice(5, 7) + '.' : '';
+const H = (m) => { m = Math.round(+m || 0); return Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + String(m % 60).padStart(2, '0') + ' min' : ''); };
+const Hs = (m) => (Math.round((+m || 0) / 6) / 10).toLocaleString('lv-LV') + ' h';
+const can = (n) => S.D && (RW[S.D.me.role] || 0) >= n;
+const hm = (t) => String(t || '').slice(11, 16) || String(t || '').slice(0, 5);
+
+function toast(t, kind) { document.querySelectorAll('.toast').forEach(x => x.remove()); const el = document.createElement('div'); el.className = 'toast' + (kind === 'err' ? ' err' : ''); el.textContent = t; document.body.appendChild(el); setTimeout(() => el.remove(), 3200); }
+const NET = 'Nav interneta vai vājš signāls — mēģiniet vēlreiz';
+async function api(action, data) {
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 25000);
+  let r; try { r = await fetch(API, { method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, pin: S.pin }, data || {})) }); }
+  catch (e) { const er = new Error(NET); er.code = 'net'; throw er; } finally { clearTimeout(tm); }
+  const j = await r.json().catch(() => ({ ok: false, error: 'Serveris neatbild — mēģiniet vēlreiz', code: 'net' }));
+  if (!j.ok) { const e = new Error(j.error || 'Kļūda'); e.code = j.code; throw e; }
+  return j;
+}
+function sheet(html) { closeSheet(); const b = document.createElement('div'); b.className = 'sheet-bg'; b.id = 'sheetBg'; b.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`;
+  b.addEventListener('click', e => { if (e.target.closest('[data-x]') || e.target === b) closeSheet(); }); document.body.appendChild(b); return b.firstChild; }
+function closeSheet() { const b = $('sheetBg'); if (b) b.remove(); }
+const XB = '<button class="ib" data-x aria-label="Aizvērt"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+const busy = (b, t) => { b.disabled = true; b.dataset.t = b.textContent; b.textContent = t; };
+const unbusy = (b) => { b.disabled = false; if (b.dataset.t) b.textContent = b.dataset.t; };
+
+/* Punkts + teksts (ne tikai krāsa) */
+function stTxt(r) { return !r || r.statuss === 'nevajag' ? 'nevajag' : r.statuss === 'darba' ? 'darbā ' + r.laiks : r.statuss === 'beidza' ? 'beidza ' + (r.beidz || '') : 'nav'; }
+function dot(r) { const s = r && r.statuss; return `<i class="pd ${s === 'darba' ? 'g' : s === 'beidza' ? 'b' : s === 'nav' ? 'r' : 'n'}" aria-hidden="true"></i>`; }
+const roleLine = (o, k) => `<span>${dot(o[k])}${AM[k]}<em>${esc(stTxt(o[k]))}</em></span>`;
+
+/* ---------- ieeja ---------- */
+function showGate(msg) { $('vApp').hidden = true; $('tabs').hidden = true; $('sideNav').hidden = true; $('vGate').hidden = false; $('gErr').textContent = msg || ''; setTimeout(() => $('gPin').focus(), 100); }
+$('gateForm').onsubmit = async (e) => { e.preventDefault(); S.pin = $('gPin').value.trim(); if (!S.pin) return; try { await load(); ls.set(PINK, S.pin); } catch (err) { showGate(err.message); } };
+function logout() { ls.del(PINK); S.pin = ''; S.D = null; closeSheet(); showGate(''); }
+
+async function load() {
+  const r = await api('boot', S.day ? { datums: S.day } : {});
+  S.D = r; if (!S.day) S.day = r.today;
+  $('vGate').hidden = true; $('vApp').hidden = false;
+  $('hdSub').textContent = r.me.name + ' · ' + (ROLE[r.me.role] || r.me.role);
+  $('btnMe').textContent = r.me.name.replace(/^SIA\s+/i, '').split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase();
+  drawTabs(); await draw();
+}
+function tabsList() { return [['obj', 'Objekti'], ['tab', 'Tabele']].concat(can(2) ? [['sms', 'SMS']] : []).concat(can(3) ? [['set', 'Iestatījumi']] : []); }
+function drawTabs() {
+  const T = tabsList(); if (!T.some(x => x[0] === S.tab)) S.tab = 'obj';
+  const b = ([k, l]) => `<button type="button" data-t="${k}" class="${S.tab === k ? 'on' : ''}">${l}</button>`;
+  $('tabs').innerHTML = T.map(b).join(''); $('tabs').hidden = false;
+  $('sideNav').innerHTML = T.map(b).join('') + `<div class="sm">${S.D ? esc(S.D.kopsavilkums.objekti) + ' objekti · ' + esc(S.D.kopsavilkums.darbinieki) + ' darbinieki' : ''}</div>`; $('sideNav').hidden = false;
+  document.body.classList.add('has-nav');
+}
+const goTab = (e) => { const b = e.target.closest('[data-t]'); if (!b) return; S.tab = b.dataset.t; drawTabs(); draw(); scrollTo(0, 0); };
+$('tabs').onclick = goTab; $('sideNav').onclick = goTab;
+$('btnRefresh').onclick = () => load().then(() => toast('Atjaunots')).catch(err => toast(err.message, 'err'));
+function applyTheme(t) { document.documentElement.dataset.theme = t === 'dark' ? 'dark' : 'light'; }
+$('btnTheme').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; applyTheme(t); ls.set('sh_theme', t); };
+addEventListener('storage', (e) => { if (e.key === 'sh_theme') applyTheme(e.newValue); });
+addEventListener('message', (e) => { const m = e.data; if (e.origin === location.origin && m && m.sh === 'theme') applyTheme(m.t); });
+$('btnMe').onclick = () => { const s = sheet(`<div class="hd"><h3>${esc(S.D.me.name)}</h3>${XB}</div><p style="font-weight:700;color:var(--ink2);margin:0 0 14px">${esc(ROLE[S.D.me.role] || '')}</p>
+  <div class="card" style="margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink2)">Darbinieki atzīmējas ar SMS uz biroja telefonu: <b>SAKU</b> un objekta kods (piem. SAKU 104), beidzot — <b>BEIDZU</b>, statuss — <b>?</b>. Atbildi saņem uzreiz.</div>
+  ${S.pin ? '<button class="pill big" style="width:100%" id="mOut">Iziet</button>' : '<button class="pill dk big" style="width:100%" id="mIn">Ienākt ar PIN</button>'}`);
+  const o = s.querySelector('#mOut'); if (o) o.onclick = logout; const i = s.querySelector('#mIn'); if (i) i.onclick = () => { closeSheet(); showGate(''); }; };
+
+async function draw() {
+  const v = $('view');
+  try {
+    if (S.tab === 'obj') return drawObj(v);
+    if (S.tab === 'tab') return await drawTab(v);
+    if (S.tab === 'sms') return await drawSms(v);
+    if (S.tab === 'set') return await drawSet(v);
+  } catch (err) { v.innerHTML = `<div class="card empty">${esc(err.message)}</div>`; }
+}
+
+/* ---------- Objekti ---------- */
+function drawObj(v) {
+  const D = S.D, K = D.kopsavilkums, wd = dow(S.day) <= 5, isT = S.day === D.today;
+  let L = D.objekti.slice(); const q = S.q.toLowerCase();
+  if (S.f === 'miss') L = L.filter(o => o.trukst); if (S.f === 'ok') L = L.filter(o => !o.trukst);
+  if (q) L = L.filter(o => (o.adrese + ' ' + o.kods + ' ' + o.vaditajs).toLowerCase().includes(q));
+  L.sort((a, b) => (b.trukst - a.trukst) || a.adrese.localeCompare(b.adrese, 'lv'));
+  const gw = D.varteja, gwOk = gw.iestatita && gw.ping;
+  v.innerHTML = `<div class="pt2"><h1 class="pt">Objekti</h1><small>${isT ? 'atjaunots ' + new Date().toLocaleTimeString('lv-LV', { hour: '2-digit', minute: '2-digit' }) : ''}</small></div>
+    ${can(2) && !gwOk ? `<div class="banner sand">${'<span class="dot">!</span>'}<div><b>${gw.iestatita ? 'SMS telefons vēl nav sūtījis ziņas' : 'SMS vārteja vēl nav pieslēgta'}</b><span>${gw.iestatita ? 'Pārbaudiet, vai telefonā SMS Gateway ir ieslēgts.' : 'Kad administrators pieslēgs SMS telefonu, atzīmes parādīsies šeit.'}</span></div></div>` : ''}
+    <div class="dayb"><button class="ib" data-d="-1" aria-label="Iepriekšējā diena">‹</button><span class="lbl">${esc(lvLong(S.day))}${isT ? ' · šodien' : ''}</span><button class="ib" data-d="1" aria-label="Nākamā diena" ${isT ? 'disabled' : ''}>›</button></div>
+    <div class="kp"><button class="mint" data-f="ok"><b>${K.kartiba}</b><span>viss kārtībā</span></button><button class="rose" data-f="miss"><b>${wd ? K.trukst : '—'}</b><span>${wd ? 'kāds nav darbā' : 'brīvdiena'}</span></button>
+      <div class="sky"><b>${K.darba}</b><span>darbinieki šobrīd darbā</span></div></div>
+    <div class="search"><input id="oq" placeholder="Meklēt adresi vai kodu" value="${esc(S.q)}" aria-label="Meklēt"></div>
+    <div class="seg" style="margin:0 0 10px" id="oF">${[['all', 'Visi ' + D.objekti.length], ['miss', 'Trūkst ' + K.trukst], ['ok', 'Kārtībā ' + K.kartiba]].map(([k, l]) => `<button data-f="${k}" class="${S.f === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="legend2"><span><i class="pd g"></i>darbā</span><span><i class="pd b"></i>beidza</span><span><i class="pd r"></i>nav darbā</span></div>
+    <div class="split"><div class="list">${L.map(o => `<button class="orow ${S.sel === o.anorm ? 'sel' : ''}" data-o="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>kods ${esc(o.kods)}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div><div class="roles">${roleLine(o, 'uzk')}${roleLine(o, 'set')}</div></button>`).join('')
+      || `<div class="card empty">${D.objekti.length ? 'Nekas neatbilst' : 'Darba laikam vēl nav objektu.' + (can(3) ? ' Iestatījumos piešķiriet objektiem SMS kodus.' : '')}</div>`}</div><div class="pane" id="pane"></div></div>`;
+  v.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { S.f = b.dataset.f; drawObj(v); });
+  v.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => { S.day = addDays(S.day, +b.dataset.d); if (S.day > S.D.today) S.day = S.D.today; await load().catch(err => toast(err.message, 'err')); });
+  const oq = $('oq'); oq.oninput = () => { S.q = oq.value; const p = oq.selectionStart; drawObj(v); const n = $('oq'); n.focus(); n.setSelectionRange(p, p); };
+  v.querySelectorAll('[data-o]').forEach(b => b.onclick = () => openObj(b.dataset.o));
+  if (S.sel && innerWidth >= 1000) openObj(S.sel, true);
+}
+async function openObj(anorm, quiet) {
+  S.sel = anorm; const wide = innerWidth >= 1000, pane = $('pane');
+  document.querySelectorAll('.orow').forEach(b => b.classList.toggle('sel', b.dataset.o === anorm));
+  const box = wide && pane ? pane : sheet(`<div class="hd"><h3>Objekts</h3>${XB}</div><div id="objBody"><div class="skel"></div><div class="skel"></div></div>`).querySelector('#objBody');
+  if (wide && pane && !quiet) box.innerHTML = '<div class="skel"></div><div class="skel"></div>';
+  try { const r = await api('objekts', { anorm, datums: S.day }); S.O = r; objHtml(box, r, wide); } catch (err) { box.innerHTML = `<div class="card empty">${esc(err.message)}</div>`; }
+}
+function objHtml(box, r, wide) {
+  const o = r.objekts, isT = r.datums === S.D.today;
+  const rc = (k) => { const x = o[k]; if (x.statuss === 'nevajag') return `<div class="rc na"><div class="h">${dot(x)}<b>${AM[k]}</b><em>NEVAJAG</em></div></div>`;
+    const okk = x.statuss !== 'nav', P = r.posmi.filter(p => p.amats === k);
+    return `<div class="rc ${okk ? 'ok' : 'bad'}"><div class="h">${dot(x)}<b>${AM[k]}</b><em>${x.statuss === 'darba' ? 'DARBĀ' : x.statuss === 'beidza' ? 'BEIDZA' : 'NAV DARBĀ'}</em></div>
+      <p>${x.statuss === 'nav' ? (isT ? 'Šodien nav atzīmējies' : 'Šajā dienā nebija atzīmējies') : P.map(p => esc(p.sak) + '–' + (p.beidz ? esc(p.beidz) + ' · ' + H(p.min) : 'tagad') + (p.vards ? ' · ' + esc(p.vards) : '')).join('<br>')}</p>
+      ${x.statuss === 'nav' && isT && can(2) ? `<button class="pill dk" data-rem="${k}">Sūtīt SMS atgādinājumu</button>` : ''}</div>`; };
+  const wcell = (s) => `<span style="display:flex;justify-content:center"><i class="pd ${s === 'ok' ? 'g' : s === 'nav' ? 'r' : 'n'}" title="${s === 'ok' ? 'bija darbā' : s === 'nav' ? 'nebija' : s === 'brivs' ? 'brīvdiena' : s === 'nevajag' ? 'nevajag' : ''}"></i></span>`;
+  box.innerHTML = `${wide ? '' : ''}<h2 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.02em">${esc(o.adrese)}</h2>
+    <p style="margin:4px 0 14px;font-size:14px;font-weight:700;color:var(--ink3)">SMS kods <b style="color:var(--ink)">${esc(o.kods)}</b> · ${esc(lvLong(r.datums))}</p>
+    ${rc('uzk')}${rc('set')}
+    <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Šonedēļ</b><div class="wk" style="margin-top:10px"><span></span>${WD.map(w => `<span>${w}</span>`).join('')}
+      <span class="l">Uzkopējs</span>${r.nedela.map(d => wcell(d.uzk)).join('')}<span class="l">Sētnieks</span>${r.nedela.map(d => wcell(d.set)).join('')}</div>
+      <div class="legend2" style="margin:10px 0 0"><span><i class="pd g"></i>bija</span><span><i class="pd r"></i>nebija</span><span><i class="pd n"></i>brīvs / vēl nav</span></div></div>
+    ${can(3) && r.posmi.length ? `<div class="card" style="margin:0 0 10px"><b style="font-weight:800">Atzīmes (labot)</b>${r.posmi.map((p, i) => `<div class="kv"><span>${AM[p.amats]}${p.vards ? ' · ' + esc(p.vards) : ''}</span><button class="pill" style="min-height:36px" data-ed="${i}">${esc(p.sak)}–${esc(p.beidz || '…')}</button></div>`).join('')}</div>` : ''}
+    ${can(3) ? `<button class="pill" style="width:100%;margin:0 0 10px" id="addM">+ Pievienot atzīmi</button>` : ''}
+    <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Darbinieki</b>${r.darbinieki.map(w => `<div class="kv"><span>${esc(w.vards || AM[w.amats])}${w.vards ? ' · ' + AM[w.amats].toLowerCase() : ''}${w.aktivs ? '' : ' · neaktīvs'}</span>${can(2) && w.phone ? `<a href="tel:${esc(w.phone)}" style="color:var(--ink);font-weight:800">${esc(w.phone)}</a>` : `<b>${esc(w.phone)}</b>`}</div>`).join('') || '<div class="kv"><span>Nav piesaistītu darbinieku</span></div>'}</div>
+    <div class="card" style="margin:0 0 10px"><b style="font-weight:800">${isT ? 'Šodienas' : 'Dienas'} SMS</b><div style="margin-top:6px">${r.sms.map(smsLine).join('') || '<div class="kv"><span>Nav</span></div>'}</div></div>
+    <div class="card"><div class="kv"><span>${MON[+r.datums.slice(5, 7) - 1][0].toUpperCase() + MON[+r.datums.slice(5, 7) - 1].slice(1)} · uzkopējs</span><b>${H(r.menesis.uzk)}</b></div><div class="kv"><span>sētnieks</span><b>${H(r.menesis.set)}</b></div></div>`;
+  box.querySelectorAll('[data-rem]').forEach(b => b.onclick = async () => { busy(b, 'Sūta…'); try { const x = await api('atgadinat', { anorm: o.anorm, amats: b.dataset.rem }); toast('Nosūtīts: ' + x.nosutits); } catch (err) { toast(err.message, 'err'); } finally { unbusy(b); } });
+  box.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => editMark(r.posmi[+b.dataset.ed], o));
+  const am = box.querySelector('#addM'); if (am) am.onclick = () => addMark(o, r.datums);
+}
+const fld = (id, l, val, attr) => `<div class="f"><label for="${id}">${l}</label><input id="${id}" value="${esc(val == null ? '' : val)}" ${attr || ''}></div>`;
+function editMark(p, o) {
+  const s = sheet(`<div class="hd"><h3>${esc(o.adrese)} · ${AM[p.amats]}</h3>${XB}</div>
+    <div class="row2">${fld('eS', 'Sākums', p.sak, 'type="time"')}${fld('eB', 'Beigas', p.beidz, 'type="time"')}</div>
+    <div class="acts"><button class="btn-rose" id="eDel">Atcelt</button><button class="btn-dk" id="eOk">Saglabāt</button></div>`);
+  s.querySelector('#eOk').onclick = async (e) => { busy(e.target, '…'); const sk = $('eS').value, bk = $('eB').value;
+    try { if (sk !== p.sak) await api('labot', { id: p.ids[0], laiks: sk });
+      if (bk && bk !== p.beidz) { if (p.ids[1]) await api('labot', { id: p.ids[1], laiks: bk }); else await api('labot', { aizvert: p.ids[0], laiks: bk }); }
+      closeSheet(); toast('Saglabāts'); await load(); if (S.sel) openObj(S.sel, true); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+  s.querySelector('#eDel').onclick = async (e) => { if (!confirm('Atcelt šo atzīmi? (paliek vēsturē kā atcelta)')) return; busy(e.target, '…');
+    try { for (const id of p.ids) await api('labot', { id, atcelt: true }); closeSheet(); toast('Atcelts'); await load(); if (S.sel) openObj(S.sel, true); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+}
+function addMark(o, d) {
+  const s = sheet(`<div class="hd"><h3>Pievienot atzīmi</h3>${XB}</div><p style="margin:0 0 12px;font-weight:700;color:var(--ink2)">${esc(o.adrese)} · ${esc(lvLong(d))}</p>
+    <div class="f"><span class="lb">Amats</span><div class="chips" id="aA"><button type="button" data-a="uzk" class="on">Uzkopējs</button><button type="button" data-a="set">Sētnieks</button></div></div>
+    ${fld('aV', 'Vārds (nav obligāts)', '', '')}<div class="row2">${fld('aS', 'Sākums', '08:00', 'type="time"')}${fld('aB', 'Beigas', '', 'type="time"')}</div>
+    <button class="pill dk big" style="width:100%" id="aOk">Saglabāt</button>`);
+  s.querySelector('#aA').onclick = (e) => { const b = e.target.closest('[data-a]'); if (!b) return; s.querySelectorAll('#aA button').forEach(x => x.classList.toggle('on', x === b)); };
+  s.querySelector('#aOk').onclick = async (e) => { busy(e.target, '…');
+    try { await api('labot', { anorm: o.anorm, datums: d, amats: s.querySelector('#aA .on').dataset.a, vards: $('aV').value.trim(), sak: $('aS').value, beidz: $('aB').value });
+      closeSheet(); toast('Pievienots'); await load(); openObj(o.anorm, true); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+}
+function smsLine(x) { const out = x.virziens === 'izej', bad = /nezināms|nederīgs|kļūda/.test(x.statuss || '');
+  return `<div class="smsl ${out ? 'out' : ''} ${bad ? 'bad' : ''}"><time>${esc(hm(x.laiks))}</time><div class="tx"><small>${out ? '→ ' : ''}${esc([x.adrese, x.amats ? AM[x.amats].toLowerCase() : '', x.vards].filter(Boolean).join(' · ') || x.phone || '')}${bad ? ' · ' + esc(x.statuss) : out && x.statuss !== 'nosūtīts' ? ' · ' + esc(x.statuss) : ''}</small><b>${esc(x.teksts)}</b></div><span class="d">${out ? 'izej.' : 'ien.'}</span></div>`; }
+
+/* ---------- Tabele ---------- */
+async function drawTab(v) {
+  const t = S.D.today; if (!S.tNo) { S.tNo = t.slice(0, 8) + '01'; S.tLi = t; }
+  v.innerHTML = `<h1 class="pt">Tabele</h1><div class="row2" style="margin:0 0 12px">${fld('tNo', 'No', S.tNo, 'type="date"')}${fld('tLi', 'Līdz', S.tLi, 'type="date"')}</div>
+    <div class="chips" style="margin:-4px 0 12px" id="tQ"><button data-m="0">Šis mēnesis</button><button data-m="-1">Iepriekšējais mēnesis</button></div><div id="tBody"><div class="skel"></div><div class="skel"></div></div>`;
+  const reload = async () => { S.tNo = $('tNo').value; S.tLi = $('tLi').value; try { S.T = await api('tabele', { no: S.tNo, lidz: S.tLi }); tabHtml(); } catch (err) { $('tBody').innerHTML = `<div class="card empty">${esc(err.message)}</div>`; } };
+  $('tNo').onchange = reload; $('tLi').onchange = reload;
+  $('tQ').onclick = (e) => { const b = e.target.closest('[data-m]'); if (!b) return; const d = new Date(t + 'T12:00:00Z'); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + +b.dataset.m);
+    const a = d.toISOString().slice(0, 10), e2 = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).toISOString().slice(0, 10); $('tNo').value = a; $('tLi').value = e2 < t ? e2 : t; reload(); };
+  await reload();
+}
+function tabHtml() {
+  const T = S.T, R = T.rindas.slice().sort((a, b) => b.trukaDienas.length - a.trukaDienas.length || a.adrese.localeCompare(b.adrese, 'lv'));
+  $('tBody').innerHTML = `<div class="card sky" style="margin:0 0 12px"><span style="font-size:13px;font-weight:700;color:var(--ink2)">Kopā nostrādāts · ${lvS(T.no)}–${lvS(T.lidz)}</span>
+      <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(T.kopa.uzk + T.kopa.set)}</div>
+      <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.set)}</b><span>sētnieki</span></div><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.uzk)}</b><span>uzkopēji</span></div></div></div>
+    <div class="card tbx"><table class="tbl"><thead><tr><th>Adrese</th><th class="n">Uzkop.</th><th class="n">Sētn.</th></tr></thead><tbody>
+      ${R.map(r => `<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small></td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td></tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
+    </tbody></table></div>
+    <button class="pill dk big" style="width:100%;margin-top:12px" id="tX">Lejupielādēt Excel</button>
+    <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Excel failā — kopsavilkums pa objektiem un katra diena: sākums, beigas, stundas</p>`;
+  $('tX').onclick = (e) => xlsx(e.target);
+}
+/* Excel pēc SH eksportu stila (sh-theme/eksports.md) */
+function loadX() { return window.ExcelJS ? Promise.resolve() : new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'; s.onload = res; s.onerror = () => rej(new Error('Neizdevās ielādēt Excel bibliotēku')); document.head.appendChild(s); }); }
+async function xlsx(btn) {
+  busy(btn, 'Gatavo…');
+  try { await loadX(); const T = S.T, wb = new ExcelJS.Workbook(); wb.creator = 'SELECTUM HOME';
+    const sheetOf = (name, title, cols, rows, total) => { const ws = wb.addWorksheet(name, { views: [{ state: 'frozen', ySplit: 3 }], headerFooter: { oddFooter: '&LSELECTUM HOME&R© VAITKEVIX, SIA' } });
+      ws.columns = cols.map(c => ({ key: c.k, width: c.w }));
+      ws.mergeCells(1, 1, 1, cols.length); const t = ws.getCell(1, 1); t.value = title; t.font = { bold: true, size: 16, color: { argb: 'FF17201C' } }; t.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5DBE3' } }; ws.getRow(1).height = 28;
+      ws.mergeCells(2, 1, 2, cols.length); const st = ws.getCell(2, 1); st.value = 'Periods ' + lvS(T.no) + T.no.slice(0, 4) + '–' + lvS(T.lidz) + T.lidz.slice(0, 4) + ' · SELECTUM HOME'; st.font = { size: 10, color: { argb: 'FF4A534F' } };
+      const h = ws.getRow(3); cols.forEach((c, i) => { const x = h.getCell(i + 1); x.value = c.h; x.font = { bold: true, size: 10, color: { argb: 'FFFFFFFF' } }; x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17201C' } }; x.alignment = { vertical: 'middle', horizontal: c.n ? 'right' : 'left' }; }); h.height = 22;
+      rows.forEach(r => { const row = ws.addRow(r); row.eachCell((x, i) => { x.font = { size: 10 }; x.border = { bottom: { style: 'thin', color: { argb: 'FFDFE5E2' } } }; if (cols[i - 1].f) x.numFmt = cols[i - 1].f; }); });
+      if (total) { const row = ws.addRow(total); row.eachCell((x, i) => { x.font = { bold: true, size: 10 }; x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F5F4' } }; x.border = { top: { style: 'thin', color: { argb: 'FF17201C' } } }; if (cols[i - 1].f) x.numFmt = cols[i - 1].f; }); }
+      ws.autoFilter = { from: { row: 3, column: 1 }, to: { row: 3, column: cols.length } }; };
+    const h = (m) => Math.round(m / 6) / 10;
+    sheetOf('Pa objektiem', 'Darba laika tabele', [{ k: 'a', h: 'Adrese', w: 42 }, { k: 'k', h: 'Kods', w: 8 }, { k: 'u', h: 'Uzkopējs, h', w: 13, n: 1, f: '# ##0.0' }, { k: 's', h: 'Sētnieks, h', w: 13, n: 1, f: '# ##0.0' }, { k: 'm', h: 'Dienas, kad kāds nebija', w: 22, n: 1 }, { k: 'd', h: 'Kuras dienas', w: 40 }],
+      T.rindas.map(r => [r.adrese, r.kods, h(r.uzk), h(r.set), r.trukaDienas.length, r.trukaDienas.map(lvS).join(', ')]), ['Kopā', '', h(T.kopa.uzk), h(T.kopa.set), T.rindas.reduce((n, r) => n + r.trukaDienas.length, 0), '']);
+    sheetOf('Pa dienām', 'Darba laiks pa dienām', [{ k: 'd', h: 'Datums', w: 12, f: 'dd.mm.yyyy' }, { k: 'a', h: 'Adrese', w: 40 }, { k: 'm', h: 'Amats', w: 12 }, { k: 'v', h: 'Darbinieks', w: 22 }, { k: 's', h: 'Sākums', w: 9 }, { k: 'b', h: 'Beigas', w: 9 }, { k: 'h', h: 'Stundas', w: 10, n: 1, f: '# ##0.0' }],
+      T.detalas.map(x => [new Date(x.datums + 'T00:00:00Z'), x.adrese, AM[x.amats], x.vards, x.sak, x.beidz || 'nav beigu', h(x.min)]));
+    const buf = await wb.xlsx.writeBuffer(), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    a.download = 'SH darba laiks ' + T.no + ' ' + T.lidz + '.xlsx'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  } catch (err) { toast(err.message, 'err'); } finally { unbusy(btn); }
+}
+
+/* ---------- SMS ---------- */
+async function drawSms(v) {
+  const gw = S.D.varteja, O = S.D.objekti;
+  v.innerHTML = `<h1 class="pt">SMS</h1>
+    <div class="banner ${gw.ping ? 'mint' : 'sand'}" style="background:var(--surf)"><i class="pd ${gw.ping ? 'g' : 'r'}" style="width:14px;height:14px"></i><div><b>${!gw.iestatita ? 'SMS vārteja nav pieslēgta' : gw.ping ? 'SMS telefons pieslēgts' : 'SMS telefons vēl nav atsaucies'}</b><span>${gw.ping ? 'pēdējais signāls ' + esc(lvS(gw.ping.slice(0, 10)) + ' ' + gw.ping.slice(11, 16)) + ' · ' : ''}šodien ${gw.ien} ienākošās · ${gw.izej} izejošās</span></div></div>
+    <div class="card sky" style="margin:0 0 12px"><b style="font-size:17px;font-weight:800">Sūtīt ziņu</b>
+      <div class="chips" id="sK" style="margin:10px 0">${[['visi', 'Visiem'], ['set', 'Sētniekiem'], ['uzk', 'Uzkopējiem'], ['nav', 'Kas nav darbā'], ['obj', 'Objektam…']].map(([k, l]) => `<button type="button" data-k="${k}" class="${S.kam === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="f" id="sOw" ${S.kam === 'obj' ? '' : 'hidden'}><label for="sO">Objekts</label><select id="sO">${O.map(o => `<option value="${esc(o.anorm)}">${esc(o.adrese)} (${esc(o.kods)})</option>`).join('')}</select></div>
+      <div class="f"><label for="sT">Teksts</label><textarea id="sT" maxlength="640" placeholder="Piem. Rīt gaidāms sniegs. Sētniekiem sākt darbu 6:00."></textarea></div>
+      <button class="pill dk big" style="width:100%" id="sGo">Sūtīt</button></div>
+    <div class="card"><b style="font-weight:800">Žurnāls</b><div id="sL" style="margin-top:6px"><div class="skel"></div></div></div>`;
+  $('sK').onclick = (e) => { const b = e.target.closest('[data-k]'); if (!b) return; S.kam = b.dataset.k; $('sK').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('sOw').hidden = S.kam !== 'obj'; };
+  $('sGo').onclick = async (e) => { const t = $('sT').value.trim(); if (!t) return toast('Ierakstiet tekstu', 'err');
+    const who = { visi: 'visiem darbiniekiem', set: 'visiem sētniekiem', uzk: 'visiem uzkopējiem', nav: 'tiem, kas šodien nav atzīmējušies', obj: 'objekta darbiniekiem' }[S.kam];
+    if (!confirm('Sūtīt SMS ' + who + '?')) return; busy(e.target, 'Sūta…');
+    try { const r = await api('sms', { kam: S.kam, anorm: S.kam === 'obj' ? $('sO').value : '', teksts: t }); toast('Nosūtīts ' + r.nosutits + ' darbiniekiem'); $('sT').value = ''; smsList(); } catch (err) { toast(err.message, 'err'); } finally { unbusy(e.target); } };
+  smsList();
+}
+async function smsList() { try { const r = await api('smsZurnals', { datums: S.D.today }); $('sL').innerHTML = r.sms.map(smsLine).join('') || '<div class="kv"><span>Vēl nav SMS</span></div>'; } catch (err) { $('sL').innerHTML = `<div class="kv"><span>${esc(err.message)}</span></div>`; } }
+
+/* ---------- Iestatījumi (admin) ---------- */
+async function drawSet(v) {
+  v.innerHTML = `<h1 class="pt">Iestatījumi</h1><div class="seg" style="margin:0 0 12px" id="stS">${[['obj', 'Objektu kodi'], ['wrk', 'Darbinieki'], ['cfg', 'SMS un atgādinājumi']].map(([k, l]) => `<button data-s="${k}" class="${S.set === k ? 'on' : ''}">${l}</button>`).join('')}</div><div id="stB"><div class="skel"></div><div class="skel"></div></div>`;
+  $('stS').onclick = (e) => { const b = e.target.closest('[data-s]'); if (!b) return; S.set = b.dataset.s; drawSet(v); };
+  if (!S.I) S.I = await api('iestatijumi'); setBody();
+}
+const reI = async () => { S.I = await api('iestatijumi'); };
+function nextCode() { const n = S.I.objekti.map(o => parseInt(o.kods, 10)).filter(x => x > 0); return String(n.length ? Math.max(...n) + 1 : 101); }
+function setBody() {
+  const B = $('stB'), I = S.I; if (!B) return;
+  if (S.set === 'obj') {
+    const q = (S.sq || '').toLowerCase(), act = I.objekti.filter(o => o.aktivs).length;
+    let L = I.objekti; if (q) L = L.filter(o => (o.adrese + ' ' + o.kods + ' ' + o.grupa).toLowerCase().includes(q)); if (S.sOnly) L = L.filter(o => o.aktivs);
+    B.innerHTML = `<div class="card mint" style="margin:0 0 12px;font-size:14px;font-weight:700">Darba laikā <b>${act}</b> objekti. Objektam ar SMS kodu darbinieki atzīmējas «SAKU kods». Izdzēšot kodu, objekts pazūd no saraksta (vēsture paliek).</div>
+      <div class="search"><input id="sq" placeholder="Meklēt adresi" value="${esc(S.sq || '')}"><button class="pill ${S.sOnly ? 'dk' : ''}" id="sOnly">Tikai ar kodu</button><button class="pill" id="sPr">Drukāt uzlīmes</button></div>
+      <div class="list set">${L.slice(0, 200).map(o => `<div class="orow" data-a="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>${esc(o.grupa || '')}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div>
+        <input class="kd" inputmode="numeric" placeholder="kods" value="${esc(o.aktivs ? o.kods : '')}" aria-label="SMS kods">
+        <button class="tg ${o.vajag_uzk ? 'on' : ''}" data-tg="vajag_uzk">Uzkopējs</button><button class="tg ${o.vajag_set ? 'on' : ''}" data-tg="vajag_set">Sētnieks</button></div>`).join('')}</div>
+      ${L.length > 200 ? `<p class="copy">Rāda 200 no ${L.length} — precizējiet meklēšanu</p>` : ''}`;
+    const sq = $('sq'); sq.oninput = () => { S.sq = sq.value; const p = sq.selectionStart; setBody(); const n = $('sq'); n.focus(); n.setSelectionRange(p, p); };
+    $('sOnly').onclick = () => { S.sOnly = !S.sOnly; setBody(); }; $('sPr').onclick = printStickers;
+    const save = async (row, patch) => { const o = I.objekti.find(x => x.anorm === row.dataset.a); const kd = row.querySelector('.kd'); const n = Object.assign({ anorm: o.anorm, kods: kd.value.trim(), vajag_uzk: o.vajag_uzk, vajag_set: o.vajag_set, aktivs: true }, patch || {});
+      try { await api('saveObj', n); Object.assign(o, n, { kods: n.kods.toUpperCase(), aktivs: !!n.kods }); toast(n.kods ? 'Saglabāts · kods ' + n.kods.toUpperCase() : 'Noņemts no darba laika'); S.dirty = 1; } catch (err) { toast(err.message, 'err'); kd.value = o.aktivs ? o.kods : ''; } };
+    B.querySelectorAll('.kd').forEach(i => { i.onfocus = () => { if (!i.value) { i.value = nextCode(); i.select(); i.dataset.auto = 1; } };
+      i.onblur = () => { const o = I.objekti.find(x => x.anorm === i.closest('.orow').dataset.a); if (i.dataset.auto && i.value === nextCode() && !o.aktivs) { i.dataset.auto = ''; } };
+      i.onchange = () => { i.dataset.auto = ''; save(i.closest('.orow')); };
+      i.onkeydown = (e) => { if (e.key === 'Enter') { i.dataset.auto = ''; i.blur(); save(i.closest('.orow')); } }; });
+    B.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => { const row = b.closest('.orow'), o = I.objekti.find(x => x.anorm === row.dataset.a), k = b.dataset.tg; o[k] = !o[k]; b.classList.toggle('on', o[k]); if (o.aktivs) save(row, { [k]: o[k] }); });
+    return;
+  }
+  if (S.set === 'wrk') {
+    const OB = I.objekti.filter(o => o.aktivs), on = (a) => (OB.find(o => o.anorm === a) || {}).adrese || '';
+    const q = (S.wq || '').toLowerCase(); let L = I.darbinieki; if (q) L = L.filter(w => (w.vards + ' ' + w.phone + ' ' + on(w.anorm)).toLowerCase().includes(q));
+    B.innerHTML = `<div class="search"><input id="wq" placeholder="Meklēt vārdu, tālruni, adresi" value="${esc(S.wq || '')}"><button class="pill dk" id="wAdd">+ Pievienot</button></div>
+      <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:var(--ink3)">${I.darbinieki.filter(w => w.aktivs).length} aktīvi darbinieki. Sistēma pazīst darbinieku pēc tālruņa numura.</p>
+      <div class="list">${L.map((w, i) => `<button class="orow" data-w="${esc(w.phone)}" style="${w.aktivs ? '' : 'opacity:.55'}"><div class="tx"><b>${esc(w.vards || w.phone)}</b><span>${esc(w.phone)} · ${AM[w.amats] || ''}${w.anorm ? ' · ' + esc(on(w.anorm) || 'objekts bez koda') : ''}${w.aktivs ? '' : ' · neaktīvs'}</span></div></button>`).join('') || '<div class="card empty">Vēl nav darbinieku</div>'}</div>`;
+    const wq = $('wq'); wq.oninput = () => { S.wq = wq.value; const p = wq.selectionStart; setBody(); const n = $('wq'); n.focus(); n.setSelectionRange(p, p); };
+    $('wAdd').onclick = () => editWorker(null); B.querySelectorAll('[data-w]').forEach(b => b.onclick = () => editWorker(I.darbinieki.find(w => w.phone === b.dataset.w)));
+    return;
+  }
+  const C = I.cfg;
+  B.innerHTML = `<div class="card f"><span class="lb">SMS telefona numurs (uz uzlīmēm)</span>${fld('cN', 'Numurs', C.numurs, 'inputmode="tel" placeholder="+371 2…"')}</div>
+    <div class="card f"><span class="lb">Atgādinājumi darba dienās</span><div class="row2">${fld('cR', 'No rīta — kam nav atzīmes', C.rits, 'type="time"')}${fld('cV', 'Vakarā — kas nav sūtījis BEIDZU', C.vakars, 'type="time"')}</div>
+      <div class="checks"><label><input type="checkbox" id="cA" ${C.atgadinat ? 'checked' : ''}> Sūtīt atgādinājumus automātiski</label></div></div>
+    <button class="pill dk big" style="width:100%;margin:0 0 12px" id="cSave">Saglabāt</button>
+    <div class="card"><b style="font-weight:800">SMS vārtejas pieslēgšana</b>
+      <p style="margin:6px 0 10px;font-size:13.5px;font-weight:700;color:var(--ink2)">1) Telefonā «SMS Gateway for Android» → Cloud server → Start. 2) Administrators ieliek Worker noslēpumus SMS_USER, SMS_PASS un DL_HOOK_KEY. 3) Spiediet pogu — telefons sāks sūtīt ienākošās SMS uz sistēmu.</p>
+      <button class="pill" style="width:100%" id="cHook">Pieslēgt SMS telefonu (webhook)</button><div id="cHr" style="margin-top:8px;font-size:13px;font-weight:700;color:var(--ink2)"></div></div>`;
+  $('cSave').onclick = async (e) => { busy(e.target, '…'); try { const r = await api('saveCfg', { numurs: $('cN').value, rits: $('cR').value, vakars: $('cV').value, atgadinat: $('cA').checked }); I.cfg = r.cfg; toast('Saglabāts'); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+  $('cHook').onclick = async (e) => { busy(e.target, 'Pieslēdz…'); try { const r = await api('registerHook'); $('cHr').textContent = r.rezultats.join(' · '); toast('Pieprasījums nosūtīts'); } catch (err) { $('cHr').textContent = err.message; } finally { unbusy(e.target); } };
+}
+function editWorker(w) {
+  const OB = S.I.objekti.filter(o => o.aktivs), n = !w; w = w || { phone: '', vards: '', amats: 'uzk', anorm: '', aktivs: 1 };
+  const s = sheet(`<div class="hd"><h3>${n ? 'Jauns darbinieks' : esc(w.vards || w.phone)}</h3>${XB}</div>
+    ${fld('wP', 'Tālrunis', w.phone, 'inputmode="tel" placeholder="2xxxxxxx"')}${fld('wV', 'Vārds (palīdz, ja jāzvana)', w.vards, '')}
+    <div class="f"><span class="lb">Amats</span><div class="chips" id="wA">${['uzk', 'set'].map(k => `<button type="button" data-a="${k}" class="${w.amats === k ? 'on' : ''}">${AM[k]}</button>`).join('')}</div></div>
+    <div class="f"><label for="wO">Galvenais objekts (ja SMS bez koda)</label><select id="wO"><option value="">— nav —</option>${OB.map(o => `<option value="${esc(o.anorm)}" ${o.anorm === w.anorm ? 'selected' : ''}>${esc(o.adrese)} (${esc(o.kods)})</option>`).join('')}</select></div>
+    <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label></div>
+    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>`);
+  s.querySelector('#wA').onclick = (e) => { const b = e.target.closest('[data-a]'); if (!b) return; s.querySelectorAll('#wA button').forEach(x => x.classList.toggle('on', x === b)); };
+  s.querySelector('#wOk').onclick = async (e) => { busy(e.target, '…');
+    try { await api('saveWorker', { phone: $('wP').value, oldPhone: n ? '' : w.phone, vards: $('wV').value, amats: s.querySelector('#wA .on').dataset.a, anorm: $('wO').value, aktivs: $('wAk').checked });
+      closeSheet(); toast('Saglabāts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+}
+/* Uzlīmes objektiem (A4 — 6 uz lapas) */
+function printStickers() {
+  const O = S.I.objekti.filter(o => o.aktivs), nr = S.I.cfg.numurs || '[SMS NUMURS]'; if (!O.length) return toast('Nav objektu ar kodu', 'err');
+  const cell = (o) => `<td><h4>${esc(o.adrese)}</h4><p>Darbu sākot sūti SMS: <code>SAKU ${esc(o.kods)}</code></p><p>Darbu beidzot sūti: <code>BEIDZU</code></p><p>uz numuru <b>${esc(nr)}</b></p><small>SELECTUM HOME · darba laiks</small></td>`;
+  let h = ''; for (let i = 0; i < O.length; i += 2) h += `<tr>${cell(O[i])}${O[i + 1] ? cell(O[i + 1]) : '<td style="border:0"></td>'}</tr>`;
+  $('print').innerHTML = `<table class="stk">${h}</table>`; setTimeout(() => print(), 50);
+}
+
+/* ---------- start ---------- */
+(function () { applyTheme(ls.get('sh_theme'));
+  const h = location.hash.slice(1).split('/')[0]; if (['obj', 'tab', 'sms', 'set'].indexOf(h) !== -1) S.tab = h;
+  if (!S.pin && !ls.get('sh_guest')) return showGate('');   // sh_guest — skatīšanās bez ielogošanās (portāls)
+  load().catch(err => { if (err.code === 'auth') { ls.del(PINK); S.pin = ''; showGate('PIN vairs nederīgs vai nav piekļuves'); }
+    else { $('vGate').hidden = true; $('vApp').hidden = false; $('view').innerHTML = `<div class="card empty">${esc(err.message)}<br><button class="pill dk" id="reTry" style="margin-top:12px">Mēģināt vēlreiz</button></div>`; $('reTry').onclick = () => location.reload(); } });
+  /* Atjaunojas pati ik minūti (tikai Objektu skatā, kad nav atvērts logs) */
+  setInterval(() => { if (S.D && S.tab === 'obj' && !$('sheetBg') && !document.hidden && S.day === S.D.today) load().catch(() => 0); }, 60000);
+  addEventListener('resize', () => { if (S.tab === 'obj' && S.D) { const w = innerWidth >= 1000; if (w !== S.wide) { S.wide = w; drawObj($('view')); } } });
+})();
+</script>
+</body>
+</html>
