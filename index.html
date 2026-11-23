@@ -163,8 +163,26 @@ button{cursor:pointer}
 @media(max-width:999px){.split>.pane{display:none}}
 @media print{body *{visibility:hidden}#print,#print *{visibility:visible}#print{position:absolute;inset:0}}
 #print{display:none}@media print{#print{display:block}}
-.stk{width:100%;border-collapse:separate;border-spacing:8mm}.stk td{border:1.5px solid #17201c;border-radius:6mm;padding:7mm;font-family:Manrope,Arial,sans-serif;color:#17201c;width:50%;vertical-align:top;height:62mm}
-.stk h4{margin:0 0 4mm;font-size:17pt}.stk p{margin:2mm 0;font-size:12.5pt;font-weight:700}.stk code{font-family:inherit;background:#17201c;color:#fff;border-radius:2mm;padding:.5mm 2.5mm;font-weight:800}.stk small{font-size:9pt;color:#4a534f}
+.stk{font-family:Manrope,Arial,sans-serif;color:#14201b;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.stk .pg{display:grid;grid-template-columns:1fr 1fr;gap:5mm;break-after:page}.stk .pg:last-child{break-after:auto}
+.sk{position:relative;height:86mm;border:1.6px dashed #9aa6a0;border-radius:5mm;padding:5mm;box-sizing:border-box;display:flex;flex-direction:column;break-inside:avoid;overflow:hidden;background:#fff}
+.sk .top{display:flex;align-items:center;gap:2.5mm;margin:-5mm -5mm 3.5mm;padding:3.2mm 5mm;background:#dff3ea;border-bottom:1.2px solid #b9dcc9}
+.sk .lg{width:7mm;height:7mm;border-radius:2mm;background:#14201b;color:#fff;display:grid;place-items:center;font-weight:800;font-size:8.5pt;letter-spacing:-.2pt}
+.sk .brand{font-size:7.5pt;font-weight:800;letter-spacing:.9pt;text-transform:uppercase;line-height:1.15}.sk .brand span{display:block;font-weight:700;letter-spacing:.4pt;color:#3d5a4c}
+.sk .kd{margin-left:auto;text-align:right;font-size:6.5pt;font-weight:800;letter-spacing:.6pt;color:#3d5a4c;line-height:1}.sk .kd b{display:block;font-size:19pt;color:#14201b;letter-spacing:0;margin-top:.6mm}
+.sk h4{margin:0 0 3mm;font-size:12.5pt;font-weight:800;line-height:1.2;max-height:2.4em;overflow:hidden}
+.sk .mid{display:flex;gap:4mm;flex:1;min-height:0}
+.sk .steps{flex:1;display:flex;flex-direction:column;gap:2.4mm}
+.sk .st{display:flex;align-items:center;gap:2.5mm}
+.sk .st i{font-style:normal;width:6mm;height:6mm;border-radius:50%;display:grid;place-items:center;font-size:8pt;font-weight:800;color:#fff;flex:none}
+.sk .st.go i{background:#1e7a4a}.sk .st.end i{background:#b42318}.sk .st.q i{background:#5b6b64}
+.sk .st small{display:block;font-size:7pt;font-weight:700;color:#4a5a53;line-height:1.25}
+.sk .st code{font-family:inherit;font-size:14pt;font-weight:800;background:#14201b;color:#fff;border-radius:1.8mm;padding:.4mm 2.4mm;letter-spacing:.4pt;white-space:nowrap}
+.sk .st.q code{font-size:11pt;background:#e8ecea;color:#14201b}
+.sk .qr{width:27mm;flex:none;text-align:center;font-size:6.3pt;font-weight:700;color:#4a5a53;line-height:1.25}.sk .qr svg{width:27mm;height:27mm;display:block;margin-bottom:1mm}
+.sk .nr{margin:3mm -5mm -5mm;padding:2.6mm 5mm;background:#14201b;color:#fff;display:flex;align-items:baseline;gap:2.5mm}
+.sk .nr small{font-size:7pt;font-weight:700;opacity:.8;line-height:1.2}.sk .nr b{margin-left:auto;font-size:17pt;font-weight:800;letter-spacing:.6pt}
+@media print{@page{size:A4;margin:9mm}}
 
 </style>
 </head>
@@ -492,11 +510,26 @@ function editWorker(w) {
       closeSheet(); toast('Saglabāts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
 }
 /* Uzlīmes objektiem (A4 — 6 uz lapas) */
-function printStickers() {
-  const O = S.I.objekti.filter(o => o.aktivs), nr = S.I.cfg.numurs || '[SMS NUMURS]'; if (!O.length) return toast('Nav objektu ar kodu', 'err');
-  const cell = (o) => `<td><h4>${esc(o.adrese)}</h4><p>Darbu sākot sūti SMS: <code>START ${esc(o.kods)}</code></p><p>Darbu beidzot sūti: <code>STOP</code></p><p>uz numuru <b>${esc(nr)}</b></p><small>SELECTUM HOME · darba laiks</small></td>`;
-  let h = ''; for (let i = 0; i < O.length; i += 2) h += `<tr>${cell(O[i])}${O[i + 1] ? cell(O[i + 1]) : '<td style="border:0"></td>'}</tr>`;
-  $('print').innerHTML = `<table class="stk">${h}</table>`; setTimeout(() => print(), 50);
+let QRL = null;
+const qrLib = () => QRL || (QRL = new Promise((ok) => { if (window.qrcode) return ok(true); const sc = document.createElement('script');
+  sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.onload = () => ok(true); sc.onerror = () => { QRL = null; ok(false); }; document.head.appendChild(sc); }));
+function qrSvg(text) { try { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { return ''; } }
+async function printStickers() {
+  const O = S.I.objekti.filter(o => o.aktivs); if (!O.length) return toast('Nav objektu ar kodu', 'err');
+  const full = S.I.cfg.numurs || '', nr = full ? full.replace(/^\+371/, '').replace(/(\d{2})(?=\d)/g, '$1 ').trim() : '[SMS NUMURS]';
+  const hasQr = full && await qrLib();
+  const cell = (o) => `<div class="sk">
+    <div class="top"><div class="lg">SH</div><div class="brand">Selectum Home<span>Darba laiks · Рабочее время</span></div><div class="kd">KODS · КОД<b>${esc(o.kods)}</b></div></div>
+    <h4>${esc(o.adrese)}</h4>
+    <div class="mid"><div class="steps">
+      <div class="st go"><i>▶</i><div><code>START ${esc(o.kods)}</code><small>Sākot darbu · Начало работы</small></div></div>
+      <div class="st end"><i>■</i><div><code>STOP</code><small>Beidzot darbu · Конец работы</small></div></div>
+      <div class="st q"><i>?</i><div><code>?</code><small>Statuss · Статус</small></div></div>
+    </div>${hasQr ? `<div class="qr">${qrSvg('SMSTO:' + full + ':START ' + o.kods)}Noskenē — SMS gatava<br>Сканируй — SMS готово</div>` : ''}</div>
+    <div class="nr"><small>Sūti SMS uz numuru<br>Отправь SMS на номер</small><b>${esc(nr)}</b></div>
+  </div>`;
+  let h = ''; for (let i = 0; i < O.length; i += 6) h += `<div class="pg">${O.slice(i, i + 6).map(cell).join('')}</div>`;
+  $('print').innerHTML = `<div class="stk">${h}</div>`; setTimeout(() => print(), 120);
 }
 
 /* ---------- start ---------- */
