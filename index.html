@@ -203,7 +203,7 @@ const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '
 const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }, del: k => { try { localStorage.removeItem(k); } catch (e) {} } };
 const S = { pin: ls.get(PINK) || '', tab: 'obj', day: '', f: 'all', q: '', sel: '', D: null, O: null, T: null, set: 'obj', I: null, kam: 'visi' };
 const ROLE = { admin: 'Administrators', vaditajs: 'Pieteicējs', skatitajs: 'Skatītājs' }, RW = { admin: 3, vaditajs: 2, skatitajs: 0 };
-const AM = { uzk: 'Uzkopējs', set: 'Sētnieks' }, WD = ['P', 'O', 'T', 'C', 'Pk', 'S', 'Sv'];
+const AM = { uzk: 'Uzkopējs', set: 'Sētnieks', abi: 'Abi' }, WD = ['P', 'O', 'T', 'C', 'Pk', 'S', 'Sv'];
 const MON = ['janvāris', 'februāris', 'marts', 'aprīlis', 'maijs', 'jūnijs', 'jūlijs', 'augusts', 'septembris', 'oktobris', 'novembris', 'decembris'];
 const addDays = (d, n) => { const x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const dow = (d) => { const w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 0 ? 7 : w; };
@@ -479,10 +479,13 @@ function editWorker(w) {
   const OB = S.I.objekti.filter(o => o.aktivs), n = !w; w = w || { phone: '', vards: '', amats: 'uzk', anorm: '', aktivs: 1 };
   const s = sheet(`<div class="hd"><h3>${n ? 'Jauns darbinieks' : esc(w.vards || w.phone)}</h3>${XB}</div>
     ${fld('wP', 'Tālrunis', w.phone, 'inputmode="tel" placeholder="2xxxxxxx"')}${fld('wV', 'Vārds (palīdz, ja jāzvana)', w.vards, '')}
-    <div class="f"><span class="lb">Amats</span><div class="chips" id="wA">${['uzk', 'set'].map(k => `<button type="button" data-a="${k}" class="${w.amats === k ? 'on' : ''}">${AM[k]}</button>`).join('')}</div></div>
+    <div class="f"><span class="lb">Amats</span><div class="chips" id="wA">${['uzk', 'set', 'abi'].map(k => `<button type="button" data-a="${k}" class="${w.amats === k ? 'on' : ''}">${AM[k]}</button>`).join('')}</div></div>
     <div class="f"><label for="wO">Galvenais objekts (ja SMS bez koda)</label><select id="wO"><option value="">— nav —</option>${OB.map(o => `<option value="${esc(o.anorm)}" ${o.anorm === w.anorm ? 'selected' : ''}>${esc(o.adrese)} (${esc(o.kods)})</option>`).join('')}</select></div>
     <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label></div>
-    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>`);
+    <p style="margin:-4px 0 12px;font-size:12.5px;font-weight:600;color:var(--ink2)">«Abi» — vienā objektā uzkopējs, citā sētnieks: amatu nosaka objekts, kurā sūta START.</p>
+    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
+  if (!n) s.querySelector('#wDel').onclick = async (e) => { if (!confirm('Izdzēst ' + (w.vards || w.phone) + ' no Darba laika? Nostrādātās stundas un SMS vēsture paliek.')) return; busy(e.target, '…');
+    try { await api('delWorker', { phone: w.phone }); closeSheet(); toast('Izdzēsts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
   s.querySelector('#wA').onclick = (e) => { const b = e.target.closest('[data-a]'); if (!b) return; s.querySelectorAll('#wA button').forEach(x => x.classList.toggle('on', x === b)); };
   s.querySelector('#wOk').onclick = async (e) => { busy(e.target, '…');
     try { await api('saveWorker', { phone: $('wP').value, oldPhone: n ? '' : w.phone, vards: $('wV').value, amats: s.querySelector('#wA .on').dataset.a, anorm: $('wO').value, aktivs: $('wAk').checked });
