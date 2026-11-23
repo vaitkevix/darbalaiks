@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-<!-- SH | Darba laiks — sētnieki un uzkopēji atzīmējas ar SMS (SAKU <kods> / BEIDZU); adminam objekti pa adresēm: uzkopējs un sētnieks darbā vai nav. © VAITKEVIX, SIA -->
+<!-- SH | Darba laiks — sētnieki un uzkopēji atzīmējas ar SMS (START <kods> / STOP); adminam objekti pa adresēm: uzkopējs un sētnieks darbā vai nav. © VAITKEVIX, SIA -->
 <style>
 
 :root{--bg:#f1f4f2;--surf:#fff;--surf2:#f3f5f4;--ink:#17201c;--ink2:#4a534f;--ink3:#6d7672;--dark:#17201c;--ondark:#fff;
@@ -265,7 +265,7 @@ $('btnTheme').onclick = () => { const t = document.documentElement.dataset.theme
 addEventListener('storage', (e) => { if (e.key === 'sh_theme') applyTheme(e.newValue); });
 addEventListener('message', (e) => { const m = e.data; if (e.origin === location.origin && m && m.sh === 'theme') applyTheme(m.t); });
 $('btnMe').onclick = () => { const s = sheet(`<div class="hd"><h3>${esc(S.D.me.name)}</h3>${XB}</div><p style="font-weight:700;color:var(--ink2);margin:0 0 14px">${esc(ROLE[S.D.me.role] || '')}</p>
-  <div class="card" style="margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink2)">Darbinieki atzīmējas ar SMS uz biroja telefonu: <b>SAKU</b> un objekta kods (piem. SAKU 104), beidzot — <b>BEIDZU</b>, statuss — <b>?</b>. Atbildi saņem uzreiz.</div>
+  <div class="card" style="margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink2)">Darbinieki atzīmējas ar SMS uz biroja telefonu: <b>START</b> un objekta kods (piem. START 104), beidzot — <b>STOP</b>, statuss — <b>?</b>. Atbildi saņem uzreiz.</div>
   ${S.pin ? '<button class="pill big" style="width:100%" id="mOut">Iziet</button>' : '<button class="pill dk big" style="width:100%" id="mIn">Ienākt ar PIN</button>'}`);
   const o = s.querySelector('#mOut'); if (o) o.onclick = logout; const i = s.querySelector('#mIn'); if (i) i.onclick = () => { closeSheet(); showGate(''); }; };
 
@@ -437,7 +437,7 @@ function setBody() {
   if (S.set === 'obj') {
     const q = (S.sq || '').toLowerCase(), act = I.objekti.filter(o => o.aktivs).length;
     let L = I.objekti; if (q) L = L.filter(o => (o.adrese + ' ' + o.kods + ' ' + o.grupa).toLowerCase().includes(q)); if (S.sOnly) L = L.filter(o => o.aktivs);
-    B.innerHTML = `<div class="card mint" style="margin:0 0 12px;font-size:14px;font-weight:700">Darba laikā <b>${act}</b> objekti. Objektam ar SMS kodu darbinieki atzīmējas «SAKU kods». Izdzēšot kodu, objekts pazūd no saraksta (vēsture paliek).</div>
+    B.innerHTML = `<div class="card mint" style="margin:0 0 12px;font-size:14px;font-weight:700">Darba laikā <b>${act}</b> objekti. Objektam ar SMS kodu darbinieki atzīmējas «START kods». Izdzēšot kodu, objekts pazūd no saraksta (vēsture paliek).</div>
       <div class="search"><input id="sq" placeholder="Meklēt adresi" value="${esc(S.sq || '')}"><button class="pill ${S.sOnly ? 'dk' : ''}" id="sOnly">Tikai ar kodu</button><button class="pill" id="sPr">Drukāt uzlīmes</button></div>
       <div class="list set">${L.slice(0, 200).map(o => `<div class="orow" data-a="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>${esc(o.grupa || '')}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div>
         <input class="kd" inputmode="numeric" placeholder="kods" value="${esc(o.aktivs ? o.kods : '')}" aria-label="SMS kods">
@@ -466,7 +466,7 @@ function setBody() {
   }
   const C = I.cfg;
   B.innerHTML = `<div class="card f"><span class="lb">SMS telefona numurs (uz uzlīmēm)</span>${fld('cN', 'Numurs', C.numurs, 'inputmode="tel" placeholder="+371 2…"')}</div>
-    <div class="card f"><span class="lb">Atgādinājumi darba dienās</span><div class="row2">${fld('cR', 'No rīta — kam nav atzīmes', C.rits, 'type="time"')}${fld('cV', 'Vakarā — kas nav sūtījis BEIDZU', C.vakars, 'type="time"')}</div>
+    <div class="card f"><span class="lb">Atgādinājumi darba dienās</span><div class="row2">${fld('cR', 'No rīta — kam nav atzīmes', C.rits, 'type="time"')}${fld('cV', 'Vakarā — kas nav sūtījis STOP', C.vakars, 'type="time"')}</div>
       <div class="checks"><label><input type="checkbox" id="cA" ${C.atgadinat ? 'checked' : ''}> Sūtīt atgādinājumus automātiski</label></div></div>
     <button class="pill dk big" style="width:100%;margin:0 0 12px" id="cSave">Saglabāt</button>
     <div class="card"><b style="font-weight:800">SMS vārtejas pieslēgšana</b>
@@ -491,7 +491,7 @@ function editWorker(w) {
 /* Uzlīmes objektiem (A4 — 6 uz lapas) */
 function printStickers() {
   const O = S.I.objekti.filter(o => o.aktivs), nr = S.I.cfg.numurs || '[SMS NUMURS]'; if (!O.length) return toast('Nav objektu ar kodu', 'err');
-  const cell = (o) => `<td><h4>${esc(o.adrese)}</h4><p>Darbu sākot sūti SMS: <code>SAKU ${esc(o.kods)}</code></p><p>Darbu beidzot sūti: <code>BEIDZU</code></p><p>uz numuru <b>${esc(nr)}</b></p><small>SELECTUM HOME · darba laiks</small></td>`;
+  const cell = (o) => `<td><h4>${esc(o.adrese)}</h4><p>Darbu sākot sūti SMS: <code>START ${esc(o.kods)}</code></p><p>Darbu beidzot sūti: <code>STOP</code></p><p>uz numuru <b>${esc(nr)}</b></p><small>SELECTUM HOME · darba laiks</small></td>`;
   let h = ''; for (let i = 0; i < O.length; i += 2) h += `<tr>${cell(O[i])}${O[i + 1] ? cell(O[i + 1]) : '<td style="border:0"></td>'}</tr>`;
   $('print').innerHTML = `<table class="stk">${h}</table>`; setTimeout(() => print(), 50);
 }
