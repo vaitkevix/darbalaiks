@@ -346,7 +346,7 @@ function objHtml(box, r, wide) {
     ${can(3) ? `<button class="pill" style="width:100%;margin:0 0 10px" id="addM">+ Pievienot atzīmi</button>` : ''}
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Darbinieki</b>${r.darbinieki.map(w => `<div class="kv"><span>${esc(w.vards || AM[w.amats])}${w.vards ? ' · ' + AM[w.amats].toLowerCase() : ''}${w.aktivs ? '' : ' · neaktīvs'}</span>${can(2) && w.phone ? `<a href="tel:${esc(w.phone)}" style="color:var(--ink);font-weight:800">${esc(w.phone)}</a>` : `<b>${esc(w.phone)}</b>`}</div>`).join('') || '<div class="kv"><span>Nav piesaistītu darbinieku</span></div>'}</div>
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">${isT ? 'Šodienas' : 'Dienas'} SMS</b><div style="margin-top:6px">${r.sms.map(smsLine).join('') || '<div class="kv"><span>Nav</span></div>'}</div></div>
-    <div class="card"><div class="kv"><span>${MON[+r.datums.slice(5, 7) - 1][0].toUpperCase() + MON[+r.datums.slice(5, 7) - 1].slice(1)} · uzkopējs</span><b>${H(r.menesis.uzk)}</b></div><div class="kv"><span>sētnieks</span><b>${H(r.menesis.set)}</b></div></div>`;
+    <div class="card"><div class="kv"><span>${MON[+r.datums.slice(5, 7) - 1][0].toUpperCase() + MON[+r.datums.slice(5, 7) - 1].slice(1)} · uzkopējs</span><b>${H(r.menesis.uzk)}</b></div><div class="kv"><span>sētnieks</span><b>${H(r.menesis.set)}</b></div>${r.menesis.abi ? `<div class="kv"><span>abi (uzkopējs + sētnieks)</span><b>${H(r.menesis.abi)}</b></div>` : ''}</div>`;
   box.querySelectorAll('[data-rem]').forEach(b => b.onclick = async () => { busy(b, 'Sūta…'); try { const x = await api('atgadinat', { anorm: o.anorm, amats: b.dataset.rem }); toast('Nosūtīts: ' + x.nosutits); } catch (err) { toast(err.message, 'err'); } finally { unbusy(b); } });
   box.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => editMark(r.posmi[+b.dataset.ed], o));
   const am = box.querySelector('#addM'); if (am) am.onclick = () => addMark(o, r.datums);
@@ -365,7 +365,7 @@ function editMark(p, o) {
 }
 function addMark(o, d) {
   const s = sheet(`<div class="hd"><h3>Pievienot atzīmi</h3>${XB}</div><p style="margin:0 0 12px;font-weight:700;color:var(--ink2)">${esc(o.adrese)} · ${esc(lvLong(d))}</p>
-    <div class="f"><span class="lb">Amats</span><div class="chips" id="aA"><button type="button" data-a="uzk" class="on">Uzkopējs</button><button type="button" data-a="set">Sētnieks</button></div></div>
+    <div class="f"><span class="lb">Amats</span><div class="chips" id="aA"><button type="button" data-a="uzk" class="on">Uzkopējs</button><button type="button" data-a="set">Sētnieks</button><button type="button" data-a="abi">Abi</button></div></div>
     ${fld('aV', 'Vārds (nav obligāts)', '', '')}<div class="row2">${fld('aS', 'Sākums', '08:00', 'type="time"')}${fld('aB', 'Beigas', '', 'type="time"')}</div>
     <button class="pill dk big" style="width:100%" id="aOk">Saglabāt</button>`);
   s.querySelector('#aA').onclick = (e) => { const b = e.target.closest('[data-a]'); if (!b) return; s.querySelectorAll('#aA button').forEach(x => x.classList.toggle('on', x === b)); };
@@ -390,10 +390,10 @@ async function drawTab(v) {
 function tabHtml() {
   const T = S.T, R = T.rindas.slice().sort((a, b) => b.trukaDienas.length - a.trukaDienas.length || a.adrese.localeCompare(b.adrese, 'lv'));
   $('tBody').innerHTML = `<div class="card sky" style="margin:0 0 12px"><span style="font-size:13px;font-weight:700;color:var(--ink2)">Kopā nostrādāts · ${lvS(T.no)}–${lvS(T.lidz)}</span>
-      <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(T.kopa.uzk + T.kopa.set)}</div>
-      <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.set)}</b><span>sētnieki</span></div><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.uzk)}</b><span>uzkopēji</span></div></div></div>
-    <div class="card tbx"><table class="tbl"><thead><tr><th>Adrese</th><th class="n">Uzkop.</th><th class="n">Sētn.</th></tr></thead><tbody>
-      ${R.map(r => `<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small></td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td></tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
+      <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(T.kopa.uzk + T.kopa.set + (T.kopa.abi || 0))}</div>
+      <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.set)}</b><span>sētnieki</span></div><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.uzk)}</b><span>uzkopēji</span></div>${T.kopa.abi ? `<div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.abi)}</b><span>abi amati</span></div>` : ''}</div></div>
+    <div class="card tbx"><table class="tbl"><thead><tr><th>Adrese</th><th class="n">Uzkop.</th><th class="n">Sētn.</th>${T.kopa.abi ? '<th class="n">Abi</th>' : ''}</tr></thead><tbody>
+      ${R.map(r => `<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small></td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td>${T.kopa.abi ? `<td class="n">${Hs(r.abi || 0)}</td>` : ''}</tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
     </tbody></table></div>
     <button class="pill dk big" style="width:100%;margin-top:12px" id="tX">Lejupielādēt Excel</button>
     <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Excel failā — kopsavilkums pa objektiem un katra diena: sākums, beigas, stundas</p>`;
@@ -413,8 +413,8 @@ async function xlsx(btn) {
       if (total) { const row = ws.addRow(total); row.eachCell((x, i) => { x.font = { bold: true, size: 10 }; x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F5F4' } }; x.border = { top: { style: 'thin', color: { argb: 'FF17201C' } } }; if (cols[i - 1].f) x.numFmt = cols[i - 1].f; }); }
       ws.autoFilter = { from: { row: 3, column: 1 }, to: { row: 3, column: cols.length } }; };
     const h = (m) => Math.round(m / 6) / 10;
-    sheetOf('Pa objektiem', 'Darba laika tabele', [{ k: 'a', h: 'Adrese', w: 42 }, { k: 'k', h: 'Kods', w: 8 }, { k: 'u', h: 'Uzkopējs, h', w: 13, n: 1, f: '# ##0.0' }, { k: 's', h: 'Sētnieks, h', w: 13, n: 1, f: '# ##0.0' }, { k: 'm', h: 'Dienas, kad kāds nebija', w: 22, n: 1 }, { k: 'd', h: 'Kuras dienas', w: 40 }],
-      T.rindas.map(r => [r.adrese, r.kods, h(r.uzk), h(r.set), r.trukaDienas.length, r.trukaDienas.map(lvS).join(', ')]), ['Kopā', '', h(T.kopa.uzk), h(T.kopa.set), T.rindas.reduce((n, r) => n + r.trukaDienas.length, 0), '']);
+    sheetOf('Pa objektiem', 'Darba laika tabele', [{ k: 'a', h: 'Adrese', w: 42 }, { k: 'k', h: 'Kods', w: 8 }, { k: 'u', h: 'Uzkopējs, h', w: 13, n: 1, f: '# ##0.0' }, { k: 's', h: 'Sētnieks, h', w: 13, n: 1, f: '# ##0.0' }, { k: 'b', h: 'Abi amati, h', w: 13, n: 1, f: '# ##0.0' }, { k: 'm', h: 'Dienas, kad kāds nebija', w: 22, n: 1 }, { k: 'd', h: 'Kuras dienas', w: 40 }],
+      T.rindas.map(r => [r.adrese, r.kods, h(r.uzk), h(r.set), h(r.abi || 0), r.trukaDienas.length, r.trukaDienas.map(lvS).join(', ')]), ['Kopā', '', h(T.kopa.uzk), h(T.kopa.set), h(T.kopa.abi || 0), T.rindas.reduce((n, r) => n + r.trukaDienas.length, 0), '']);
     sheetOf('Pa dienām', 'Darba laiks pa dienām', [{ k: 'd', h: 'Datums', w: 12, f: 'dd.mm.yyyy' }, { k: 'a', h: 'Adrese', w: 40 }, { k: 'm', h: 'Amats', w: 12 }, { k: 'v', h: 'Darbinieks', w: 22 }, { k: 's', h: 'Sākums', w: 9 }, { k: 'b', h: 'Beigas', w: 9 }, { k: 'h', h: 'Stundas', w: 10, n: 1, f: '# ##0.0' }],
       T.detalas.map(x => [new Date(x.datums + 'T00:00:00Z'), x.adrese, AM[x.amats], x.vards, x.sak, x.beidz || 'nav beigu', h(x.min)]));
     const buf = await wb.xlsx.writeBuffer(), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
@@ -477,7 +477,7 @@ function setBody() {
     const q = (S.wq || '').toLowerCase(); let L = I.darbinieki; if (q) L = L.filter(w => (w.vards + ' ' + w.phone + ' ' + on(w.anorm)).toLowerCase().includes(q));
     B.innerHTML = `<div class="search"><input id="wq" placeholder="Meklēt vārdu, tālruni, adresi" value="${esc(S.wq || '')}"><button class="pill dk" id="wAdd">+ Pievienot</button></div>
       <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:var(--ink3)">${I.darbinieki.filter(w => w.aktivs).length} aktīvi darbinieki. Sistēma pazīst darbinieku pēc tālruņa numura.</p>
-      <div class="list">${L.map((w, i) => `<button class="orow" data-w="${esc(w.phone)}" style="${w.aktivs ? '' : 'opacity:.55'}"><div class="tx"><b>${esc(w.vards || w.phone)}</b><span>${esc(w.phone)} · ${AM[w.amats] || ''}${w.anorm ? ' · ' + esc(on(w.anorm) || 'objekts bez koda') : ''}${w.aktivs ? '' : ' · neaktīvs'}</span></div></button>`).join('') || '<div class="card empty">Vēl nav darbinieku</div>'}</div>`;
+      <div class="list">${L.map((w, i) => `<button class="orow" data-w="${esc(w.phone)}" style="${w.aktivs ? '' : 'opacity:.55'}"><div class="tx"><b>${esc(w.vards || w.phone)}</b><span>${esc(w.phone)} · ${AM[w.amats] || ''}${w.anorm ? ' · ' + esc(on(w.anorm) || 'objekts bez koda') : ''}${(() => { const k = (I.piesaistes || []).filter(x => x.phone === w.phone).length; return k > 1 ? ' +' + (k - 1) : ''; })()}${w.aktivs ? '' : ' · neaktīvs'}</span></div></button>`).join('') || '<div class="card empty">Vēl nav darbinieku</div>'}</div>`;
     const wq = $('wq'); wq.oninput = () => { S.wq = wq.value; const p = wq.selectionStart; setBody(); const n = $('wq'); n.focus(); n.setSelectionRange(p, p); };
     $('wAdd').onclick = () => editWorker(null); B.querySelectorAll('[data-w]').forEach(b => b.onclick = () => editWorker(I.darbinieki.find(w => w.phone === b.dataset.w)));
     return;
@@ -495,18 +495,28 @@ function setBody() {
 }
 function editWorker(w) {
   const OB = S.I.objekti.filter(o => o.aktivs), n = !w; w = w || { phone: '', vards: '', amats: 'uzk', anorm: '', aktivs: 1 };
+  let L = (S.I.piesaistes || []).filter(x => x.phone === w.phone).map(x => ({ anorm: x.anorm, amats: x.amats }));
+  if (!L.length && w.anorm) L = [{ anorm: w.anorm, amats: w.amats }];
+  const amC = (v, i) => `<div class="chips" data-i="${i}">${['uzk', 'set', 'abi'].map(k => `<button type="button" data-a="${k}" class="${v === k ? 'on' : ''}">${AM[k]}</button>`).join('')}</div>`;
   const s = sheet(`<div class="hd"><h3>${n ? 'Jauns darbinieks' : esc(w.vards || w.phone)}</h3>${XB}</div>
     ${fld('wP', 'Tālrunis', w.phone, 'inputmode="tel" placeholder="2xxxxxxx"')}${fld('wV', 'Vārds (palīdz, ja jāzvana)', w.vards, '')}
-    <div class="f"><span class="lb">Amats</span><div class="chips" id="wA">${['uzk', 'set', 'abi'].map(k => `<button type="button" data-a="${k}" class="${w.amats === k ? 'on' : ''}">${AM[k]}</button>`).join('')}</div></div>
-    <div class="f"><label for="wO">Galvenais objekts (ja SMS bez koda)</label><select id="wO"><option value="">— nav —</option>${OB.map(o => `<option value="${esc(o.anorm)}" ${o.anorm === w.anorm ? 'selected' : ''}>${esc(o.adrese)} (${esc(o.kods)})</option>`).join('')}</select></div>
+    <div class="f"><span class="lb">Objekti un amats katrā</span><div id="wL"></div>
+      <select id="wAdd" style="margin-top:8px"><option value="">+ Pievienot objektu…</option>${OB.map(o => `<option value="${esc(o.anorm)}">${esc(o.adrese)} (${esc(o.kods)})</option>`).join('')}</select>
+      <p style="margin:6px 0 0;font-size:12.5px;font-weight:600;color:var(--ink2)">SMS «START kods» atzīmē amatu, kas norādīts šim objektam. «Abi» — atzīmē gan uzkopēju, gan sētnieku; stundas skaitās vienreiz. Pirmais objekts — galvenais (ja SMS bez koda).</p></div>
     <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label></div>
-    <p style="margin:-4px 0 12px;font-size:12.5px;font-weight:600;color:var(--ink2)">«Abi» — vienā objektā uzkopējs, citā sētnieks: amatu nosaka objekts, kurā sūta START.</p>
     <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
+  const draw = () => { $('wL').innerHTML = L.map((x, i) => { const o = S.I.objekti.find(z => z.anorm === x.anorm);
+      return `<div class="card" style="margin:0 0 8px;padding:10px 12px"><div style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><b style="flex:1;font-size:14px">${esc(o ? o.adrese : x.anorm)}${o && o.kods ? ` <span style="color:var(--ink3)">· ${esc(o.kods)}</span>` : ''}</b><button type="button" class="pill" style="min-height:32px;padding:0 12px" data-rm="${i}" aria-label="Noņemt">✕</button></div>${amC(x.amats, i)}</div>`; }).join('')
+      || '<div class="card" style="margin:0;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--ink3)">Nav objektu — pievienojiet zemāk</div>'; };
+  draw();
+  $('wL').onclick = (e) => { const rm = e.target.closest('[data-rm]'); if (rm) { L.splice(+rm.dataset.rm, 1); return draw(); }
+    const b = e.target.closest('[data-a]'), c = b && b.closest('[data-i]'); if (!c) return; L[+c.dataset.i].amats = b.dataset.a; draw(); };
+  $('wAdd').onchange = () => { const v = $('wAdd').value; $('wAdd').value = ''; if (!v || L.some(x => x.anorm === v)) return; L.push({ anorm: v, amats: L.length ? L[L.length - 1].amats : 'uzk' }); draw(); };
   if (!n) s.querySelector('#wDel').onclick = async (e) => { if (!confirm('Izdzēst ' + (w.vards || w.phone) + ' no Darba laika? Nostrādātās stundas un SMS vēsture paliek.')) return; busy(e.target, '…');
     try { await api('delWorker', { phone: w.phone }); closeSheet(); toast('Izdzēsts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
-  s.querySelector('#wA').onclick = (e) => { const b = e.target.closest('[data-a]'); if (!b) return; s.querySelectorAll('#wA button').forEach(x => x.classList.toggle('on', x === b)); };
   s.querySelector('#wOk').onclick = async (e) => { busy(e.target, '…');
-    try { await api('saveWorker', { phone: $('wP').value, oldPhone: n ? '' : w.phone, vards: $('wV').value, amats: s.querySelector('#wA .on').dataset.a, anorm: $('wO').value, aktivs: $('wAk').checked });
+    const am = [...new Set(L.map(x => x.amats))], main = am.length === 1 ? am[0] : L.length ? 'abi' : (w.amats || 'uzk');
+    try { await api('saveWorker', { phone: $('wP').value, oldPhone: n ? '' : w.phone, vards: $('wV').value, amats: main, anorm: L.length ? L[0].anorm : '', objekti: L, aktivs: $('wAk').checked });
       closeSheet(); toast('Saglabāts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
 }
 /* Uzlīmes objektiem (A4 — 6 uz lapas) */
