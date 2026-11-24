@@ -130,6 +130,8 @@ button{cursor:pointer}
 .pd{width:12px;height:12px;border-radius:50%;flex:none;display:inline-block;background:var(--ink3)}.pd.g{background:var(--g)}.pd.r{background:var(--r)}.pd.b{background:transparent;border:2px solid var(--g)}.pd.n{background:var(--surf2);border:1px dashed var(--ink3)}
 .orow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--surf);border:0;width:100%;text-align:left}
 .orow.sel{outline:2px solid var(--ink);outline-offset:-2px}
+@media(max-width:600px){.list.set .orow{flex-wrap:wrap;row-gap:8px}.list.set .orow .tx{flex:1 1 100%}.list.set .orow .kd{flex:1 1 auto}}
+@media(max-width:440px){.tabs button{font-size:12px;padding:0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 .orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
 .roles{display:flex;flex-direction:column;gap:5px;width:170px;flex:none}
 .roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
