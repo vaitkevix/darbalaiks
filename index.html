@@ -473,15 +473,15 @@ function setBody() {
     let L = I.objekti; if (q) L = L.filter(o => (o.adrese + ' ' + o.kods + ' ' + o.grupa).toLowerCase().includes(q)); if (S.sOnly) L = L.filter(o => o.aktivs);
     B.innerHTML = `<div class="card mint" style="margin:0 0 12px;font-size:14px;font-weight:700">Darba laikā <b>${act}</b> objekti. Objektam ar SMS kodu darbinieki atzīmējas «START kods». Izdzēšot kodu, objekts pazūd no saraksta (vēsture paliek).</div>
       <div class="search"><input id="sq" placeholder="Meklēt adresi" value="${esc(S.sq || '')}"><button class="pill ${S.sOnly ? 'dk' : ''}" id="sOnly">Tikai ar kodu</button><button class="pill" id="sPr">Drukāt uzlīmes</button></div>
-      <div class="list set">${L.slice(0, 200).map(o => `<div class="orow" data-a="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>${esc(o.grupa || '')}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div>
-        <input class="kd" inputmode="numeric" placeholder="kods" value="${esc(o.aktivs ? o.kods : '')}" aria-label="SMS kods">
-        <button class="tg ${o.vajag_uzk ? 'on' : ''}" data-tg="vajag_uzk">Uzkopējs</button><button class="tg ${o.vajag_set ? 'on' : ''}" data-tg="vajag_set">Sētnieks</button></div>`).join('')}</div>
+      <div class="list set">${L.slice(0, 200).map(o => `<div class="orow" data-a="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>${o.apv ? 'kods no apvienotā · ' + esc(o.apv.adrese) : esc(o.grupa || '') + (o.vaditajs ? ' · ' + esc(o.vaditajs) : '')}</span></div>
+        ${o.apv ? `<input class="kd" value="${esc(o.apv.kods)}" disabled aria-label="SMS kods (no apvienotā objekta)" title="Kods no apvienotā objekta ${esc(o.apv.adrese)}"><span></span><span></span></div>` : `<input class="kd" inputmode="numeric" placeholder="kods" value="${esc(o.aktivs ? o.kods : '')}" aria-label="SMS kods">
+        <button class="tg ${o.vajag_uzk ? 'on' : ''}" data-tg="vajag_uzk">Uzkopējs</button><button class="tg ${o.vajag_set ? 'on' : ''}" data-tg="vajag_set">Sētnieks</button></div>`}`).join('')}</div>
       ${L.length > 200 ? `<p class="copy">Rāda 200 no ${L.length} — precizējiet meklēšanu</p>` : ''}`;
     const sq = $('sq'); sq.oninput = () => { S.sq = sq.value; const p = sq.selectionStart; setBody(); const n = $('sq'); n.focus(); n.setSelectionRange(p, p); };
     $('sOnly').onclick = () => { S.sOnly = !S.sOnly; setBody(); }; $('sPr').onclick = printStickers;
     const save = async (row, patch) => { const o = I.objekti.find(x => x.anorm === row.dataset.a); const kd = row.querySelector('.kd'); const n = Object.assign({ anorm: o.anorm, kods: kd.value.trim(), vajag_uzk: o.vajag_uzk, vajag_set: o.vajag_set, aktivs: true }, patch || {});
       try { await api('saveObj', n); Object.assign(o, n, { kods: n.kods.toUpperCase(), aktivs: !!n.kods }); toast(n.kods ? 'Saglabāts · kods ' + n.kods.toUpperCase() : 'Noņemts no darba laika'); S.dirty = 1; } catch (err) { toast(err.message, 'err'); kd.value = o.aktivs ? o.kods : ''; } };
-    B.querySelectorAll('.kd').forEach(i => { i.onfocus = () => { if (!i.value) { i.value = nextCode(); i.select(); i.dataset.auto = 1; } };
+    B.querySelectorAll('.kd:not([disabled])').forEach(i => { i.onfocus = () => { if (!i.value) { i.value = nextCode(); i.select(); i.dataset.auto = 1; } };
       i.onblur = () => { const o = I.objekti.find(x => x.anorm === i.closest('.orow').dataset.a); if (i.dataset.auto && i.value === nextCode() && !o.aktivs) { i.dataset.auto = ''; } };
       i.onchange = () => { i.dataset.auto = ''; save(i.closest('.orow')); };
       i.onkeydown = (e) => { if (e.key === 'Enter') { i.dataset.auto = ''; i.blur(); save(i.closest('.orow')); } }; });
