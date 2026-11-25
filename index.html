@@ -108,7 +108,7 @@ button{cursor:pointer}
 .acts button{min-height:56px;border:0;border-radius:999px;font-size:16px;font-weight:800}
 .btn-dk{background:var(--dark);color:var(--ondark)}.btn-rose{background:var(--rose)}.btn-lt{background:var(--surf)}
 .thumbs{display:flex;gap:6px;margin-top:6px}.thumbs img{width:56px;height:56px;border-radius:12px;object-fit:cover;background:var(--surf2)}
-.gate{min-height:100vh;display:grid;place-items:center;padding:20px}
+.gate{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:20px}
 .gate .card{width:min(380px,100%);text-align:center;padding:28px 22px}
 .gate input{width:100%;height:56px;border:0;border-radius:18px;background:var(--surf2);text-align:center;font-size:22px;font-weight:800;margin:14px 0 10px}
 .gate input::placeholder{font-size:16px;font-weight:700;color:var(--ink3)}
@@ -131,7 +131,7 @@ button{cursor:pointer}
 .orow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--surf);border:0;width:100%;text-align:left}
 .orow.sel{outline:2px solid var(--ink);outline-offset:-2px}
 @media(max-width:600px){.list.set .orow{flex-wrap:wrap;row-gap:8px}.list.set .orow .tx{flex:1 1 100%}.list.set .orow .kd{flex:1 1 auto}}
-@media(max-width:440px){.tabs button{font-size:12px;padding:0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+@media(max-width:440px){.tabs{grid-auto-columns:auto;gap:2px}.tabs button{font-size:12px;padding:0 7px;white-space:nowrap}}
 .orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
 .roles{display:flex;flex-direction:column;gap:5px;width:170px;flex:none}
 .roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
@@ -160,7 +160,7 @@ button{cursor:pointer}
   .side-nav button{min-height:46px;border:0;border-radius:999px;background:transparent;text-align:left;padding:0 16px;font-size:14.5px;font-weight:800}
   .side-nav button.on{background:var(--dark);color:var(--ondark)}
   .side-nav .sm{font-size:12px;font-weight:700;color:var(--ink3);padding:8px 16px 0}
-  .split{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}.split>.pane{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}.split>.pane{position:sticky;top:16px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto}
 }
 .split>.pane:empty{display:none}
 @media(max-width:999px){.split>.pane{display:none}}
@@ -187,6 +187,13 @@ button{cursor:pointer}
 .sk .nr small{font-size:7pt;font-weight:700;opacity:.8;line-height:1.2}.sk .nr b{margin-left:auto;font-size:17pt;font-weight:800;letter-spacing:.6pt}
 @media print{@page{size:A4;margin:9mm}}
 
+</style>
+<style id="sh-polish">/* pieskāriena sajūta, iPhone pietuvinājums, samazināta kustība */
+button:not(:disabled):active{scale:.97}
+button,.chip,.tab{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+@media (max-width:600px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+.leaflet-touch .leaflet-bar a{width:40px!important;height:40px!important;line-height:40px!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -500,7 +507,7 @@ function setBody() {
       <div class="list">${M.map(row).join('') || '<div class="card empty">Jūsu objektos vēl nav darbinieku. Pievienojiet ar «+ Pievienot».</div>'}</div>
       <h3 style="margin:16px 0 8px;font-size:15px;font-weight:800">Citi darbinieki <span style="color:var(--ink3)">· ${O2.length}</span></h3>`}
       ${showAll ? `<div class="list">${(admin ? L : O2).map(row).join('') || '<div class="card empty">Nav darbinieku</div>'}</div>` : `<button class="pill" style="width:100%" id="wAll">Rādīt visus (${O2.length})</button>`}
-      <p style="margin:10px 0 0;font-size:13px;font-weight:700;color:var(--ink3)">${I.darbinieki.filter(w => w.aktivs).length} aktīvi darbinieki. Sistēma pazīst darbinieku pēc tālruņa numura.</p>`;
+      <p style="margin:10px 0 0;font-size:13px;font-weight:700;color:var(--ink3)">${(n => n + (n % 10 === 1 && n % 100 !== 11 ? ' aktīvs darbinieks' : ' aktīvi darbinieki'))(I.darbinieki.filter(w => w.aktivs).length)}. Sistēma pazīst darbinieku pēc tālruņa numura.</p>`;
     const wq = $('wq'); wq.oninput = () => { S.wq = wq.value; const p = wq.selectionStart; setBody(); const n = $('wq'); n.focus(); n.setSelectionRange(p, p); };
     if ($('wAll')) $('wAll').onclick = () => { S.wAll = 1; setBody(); };
     $('wAdd').onclick = () => editWorker(null); B.querySelectorAll('[data-w]').forEach(b => b.onclick = () => editWorker(I.darbinieki.find(w => w.phone === b.dataset.w)));
@@ -590,5 +597,7 @@ async function printStickers() {
 })();
 </script>
 <script src="https://vaitkevix.cloud/sh/api/apv.js" defer></script><!-- apvienotie objekti → «Apvienots» (no Mājas lietas) -->
+
+<script>/* Esc aizver lapu (datorā) */addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('sheetBg') && typeof closeSheet === 'function') closeSheet(); });</script>
 </body>
 </html>
