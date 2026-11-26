@@ -544,8 +544,11 @@ function editWorker(w) {
     <div class="f"><span class="lb">Objekts un amats *</span><div id="wL"></div>
       <select id="wOb" style="margin-top:8px"><option value="">+ Pievienot objektu…</option>${OBm.length ? `<optgroup label="Mani objekti">${OBm.map(opt).join('')}</optgroup><optgroup label="Citi objekti">${OBc.map(opt).join('')}</optgroup>` : OB.map(opt).join('')}</select>
       <p style="margin:6px 0 0;font-size:12.5px;font-weight:600;color:var(--ink2)">SMS «START kods» atzīmē amatu, kas norādīts šim objektam. «Abi» — atzīmē gan uzkopēju, gan sētnieku; stundas skaitās vienreiz. Pirmais objekts — galvenais (ja SMS bez koda).</p></div>
-    <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label></div>
-    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n || !can(3) ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
+    <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label>${n ? '<label><input type="checkbox" id="wSms" checked> Nosūtīt darbiniekam SMS ar instrukciju un objekta kodu</label>' : ''}</div>
+    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px" id="wSend">Nosūtīt SMS ar instrukciju</button>'}${n || !can(3) ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
+  if (s.querySelector('#wSend')) s.querySelector('#wSend').onclick = async (e) => {
+    try { const pv = await api('welcome', { phone: w.phone, preview: true }); if (!confirm('Nosūtīt SMS uz ' + w.phone + '?\n\n' + pv.text)) return; busy(e.target, '…');
+      const r = await api('welcome', { phone: w.phone }); toast(r.sent ? 'SMS nosūtīta' : 'Nav nosūtīts: ' + (r.why || ''), r.sent ? '' : 'err'); unbusy(e.target); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
   const draw = () => { $('wL').innerHTML = L.map((x, i) => { const o = S.I.objekti.find(z => z.anorm === x.anorm);
       return `<div class="card" style="margin:0 0 8px;padding:10px 12px"><div style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><b style="flex:1;font-size:14px">${esc(o ? o.adrese : x.anorm)}${o && o.kods ? ` <span style="color:var(--ink3)">· ${esc(o.kods)}</span>` : ''}</b><button type="button" class="pill" style="min-height:32px;padding:0 12px" data-rm="${i}" aria-label="Noņemt">✕</button></div>${amC(x.amats, i)}${x.amats ? '' : '<small style="display:block;margin-top:6px;color:#b42318;font-weight:800">Izvēlieties amatu</small>'}</div>`; }).join('')
       || '<div class="card" style="margin:0;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--ink3)">Nav objektu — pievienojiet zemāk</div>'; };
@@ -562,8 +565,8 @@ function editWorker(w) {
     if (nr.length < 6) { toast('Ierakstiet tālruņa numuru', 'err'); return unbusy(e.target); }
     if (!L.length && $('wAk').checked) { toast('Pievienojiet vismaz vienu objektu', 'err'); return unbusy(e.target); }
     if (L.some(x => !x.amats)) { toast('Katram objektam izvēlieties amatu', 'err'); return unbusy(e.target); }
-    try { await api('saveWorker', { phone: '+' + $('wC').value + nr, oldPhone: n ? '' : w.phone, vards: vv + ' ' + uu, amats: main, anorm: L.length ? L[0].anorm : '', objekti: L, aktivs: $('wAk').checked });
-      closeSheet(); toast('Saglabāts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+    try { await api('saveWorker', { phone: '+' + $('wC').value + nr, oldPhone: n ? '' : w.phone, vards: vv + ' ' + uu, amats: main, anorm: L.length ? L[0].anorm : '', objekti: L, aktivs: $('wAk').checked, noSms: n ? !($('wSms') && $('wSms').checked) : true }).then(r => (S._wl = r.welcome, r));
+      closeSheet(); toast(S._wl && S._wl.sent ? 'Saglabāts · SMS ar instrukciju nosūtīta' : 'Saglabāts'); await reI(); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
 }
 /* Uzlīmes objektiem (A4 — 6 uz lapas) */
 let QRL = null;
