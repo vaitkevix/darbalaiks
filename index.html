@@ -530,6 +530,21 @@ function setBody() {
 /* Valsts kodi tālrunim (populārākie augšā) */
 const CC = [['371', 'LV'], ['370', 'LT'], ['372', 'EE'], ['380', 'UA'], ['375', 'BY'], ['7', 'RU'], ['48', 'PL'], ['373', 'MD'], ['995', 'GE'], ['994', 'AZ'], ['998', 'UZ'], ['992', 'TJ'], ['996', 'KG'], ['91', 'IN'], ['94', 'LK'], ['977', 'NP'], ['880', 'BD'], ['63', 'PH'], ['49', 'DE'], ['44', 'GB'], ['46', 'SE'], ['358', 'FI'], ['47', 'NO'], ['45', 'DK']];
 function splitPh(p) { const d = String(p || '').replace(/\D/g, ''); const c = CC.map(x => x[0]).sort((a, b) => b.length - a.length).find(k => d.startsWith(k) && d.length > k.length + 5); return c ? [c, d.slice(c.length)] : ['371', d]; }
+/* Instrukcijas SMS priekšskats — tā pati loģika kā serverī (darbalaiks.js welcomeParts) */
+const LVg = { 'ā': 'a', 'č': 'c', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n', 'š': 's', 'ū': 'u', 'ž': 'z', 'Ā': 'A', 'Č': 'C', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'I', 'Ķ': 'K', 'Ļ': 'L', 'Ņ': 'N', 'Š': 'S', 'Ū': 'U', 'Ž': 'Z' };
+const smsAscii = (x) => String(x || '').replace(/[āčēģīķļņšūžĀČĒĢĪĶĻŅŠŪŽ]/g, c => LVg[c]).replace(/[—–]/g, '-').replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim();
+function smsParts(vards, L) {
+  const O = []; const seen = new Set();
+  L.forEach(x => { const o = S.I.objekti.find(z => z.anorm === x.anorm); const k = o ? o.anorm : x.anorm; if (seen.has(k)) return; seen.add(k); O.push({ kods: o && o.aktivs && o.kods ? o.kods : '', adrese: o ? o.adrese : x.anorm }); });
+  const v = smsAscii(String(vards || '').trim().split(/\s+/)[0]), one = O.length === 1 && O[0].kods;
+  const lines = [(v ? 'Sveiki, ' + v + '!' : 'Sveiki!'), 'SMS uz so numuru:', 'START ' + (one ? O[0].kods : 'kods') + ' - sakot darbu', 'STOP - beidzot', '? - statuss'];
+  if (one) lines.push('Objekts: ' + smsAscii(O[0].adrese)); else if (!O.length) lines.push('Objekta kodu pajauta vaditajam.');
+  else { lines.push('Kodi:'); O.forEach(o => lines.push((o.kods || 'bez koda') + ' ' + smsAscii(o.adrese))); }
+  const P = []; let cur = ''; for (const l0 of lines) { const l = l0.slice(0, 160); if (cur && (cur + '\n' + l).length > 160) { P.push(cur); cur = l; } else cur = cur ? cur + '\n' + l : l; } if (cur) P.push(cur);
+  return P;
+}
+const smsBubbles = (P) => `<div style="display:flex;flex-direction:column;gap:6px">${P.map(t => `<div style="align-self:flex-start;max-width:100%;background:var(--surf);box-shadow:0 1px 2px rgba(0,0,0,.06);border-radius:var(--r-lg,20px) var(--r-lg,20px) var(--r-lg,20px) 6px;padding:10px 14px;font-size:13.5px;font-weight:600;line-height:1.4;white-space:pre-wrap;word-break:break-word">${esc(t)}</div>`).join('')}</div>
+  <p style="margin:6px 0 0 4px;font-size:12px;font-weight:700;color:var(--ink3)">${P.length === 1 ? '1 SMS' : P.length + ' SMS'} · ${P.map(t => t.length).join(' + ')} zīmes (līdz 160 vienā SMS)</p>`;
 function editWorker(w) {
   const OB = S.I.objekti.filter(o => o.aktivs), n = !w; w = w || { phone: '', vards: '', amats: 'uzk', anorm: '', aktivs: 1 };
   const mineO = new Set(S.I.maniObj || []), OBm = OB.filter(o => mineO.has(o.anorm)), OBc = OB.filter(o => !mineO.has(o.anorm));
@@ -545,14 +560,17 @@ function editWorker(w) {
       <select id="wOb" style="margin-top:8px"><option value="">+ Pievienot objektu…</option>${OBm.length ? `<optgroup label="Mani objekti">${OBm.map(opt).join('')}</optgroup><optgroup label="Citi objekti">${OBc.map(opt).join('')}</optgroup>` : OB.map(opt).join('')}</select>
       <p style="margin:6px 0 0;font-size:12.5px;font-weight:600;color:var(--ink2)">SMS «START kods» atzīmē amatu, kas norādīts šim objektam. «Abi» — atzīmē gan uzkopēju, gan sētnieku; stundas skaitās vienreiz. Pirmais objekts — galvenais (ja SMS bez koda).</p></div>
     <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label>${n ? '<label><input type="checkbox" id="wSms" checked> Nosūtīt darbiniekam SMS ar instrukciju un objekta kodu</label>' : ''}</div>
+    <div class="f" id="wPrevBox"><span class="lb">SMS darbiniekam izskatīsies tā</span><div id="wPrev"></div></div>
     <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px" id="wSend">Nosūtīt SMS ar instrukciju</button>'}${n || !can(3) ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
   if (s.querySelector('#wSend')) s.querySelector('#wSend').onclick = async (e) => {
-    try { const pv = await api('welcome', { phone: w.phone, preview: true }); if (!confirm('Nosūtīt SMS uz ' + w.phone + '?\n\n' + pv.text)) return; busy(e.target, '…');
+    try { if (!confirm('Nosūtīt augšā redzamo SMS uz ' + w.phone + '?')) return; busy(e.target, '…');
       const r = await api('welcome', { phone: w.phone }); toast(r.sent ? 'SMS nosūtīta' : 'Nav nosūtīts: ' + (r.why || ''), r.sent ? '' : 'err'); unbusy(e.target); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
   const draw = () => { $('wL').innerHTML = L.map((x, i) => { const o = S.I.objekti.find(z => z.anorm === x.anorm);
       return `<div class="card" style="margin:0 0 8px;padding:10px 12px"><div style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><b style="flex:1;font-size:14px">${esc(o ? o.adrese : x.anorm)}${o && o.kods ? ` <span style="color:var(--ink3)">· ${esc(o.kods)}</span>` : ''}</b><button type="button" class="pill" style="min-height:32px;padding:0 12px" data-rm="${i}" aria-label="Noņemt">✕</button></div>${amC(x.amats, i)}${x.amats ? '' : '<small style="display:block;margin-top:6px;color:#b42318;font-weight:800">Izvēlieties amatu</small>'}</div>`; }).join('')
-      || '<div class="card" style="margin:0;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--ink3)">Nav objektu — pievienojiet zemāk</div>'; };
-  draw();
+      || '<div class="card" style="margin:0;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--ink3)">Nav objektu — pievienojiet zemāk</div>'; prev(); };
+  const prev = () => { const el = $('wPrev'); if (!el) return; el.innerHTML = smsBubbles(smsParts($('wV').value || nm0, L));
+    const ck = $('wSms'); if ($('wPrevBox')) $('wPrevBox').style.opacity = ck && !ck.checked ? '.45' : '1'; };
+  draw(); $('wV').oninput = prev; if ($('wSms')) $('wSms').onchange = prev;
   $('wL').onclick = (e) => { const rm = e.target.closest('[data-rm]'); if (rm) { L.splice(+rm.dataset.rm, 1); return draw(); }
     const b = e.target.closest('[data-a]'), c = b && b.closest('[data-i]'); if (!c) return; L[+c.dataset.i].amats = b.dataset.a; draw(); };
   $('wOb').onchange = () => { const v = $('wOb').value; $('wOb').value = ''; if (!v || L.some(x => x.anorm === v)) return; L.push({ anorm: v, amats: '' }); draw(); };
