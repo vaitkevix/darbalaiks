@@ -135,10 +135,10 @@ button{cursor:pointer}
 @media(max-width:600px){.list.set .orow{flex-wrap:wrap;row-gap:8px}.list.set .orow .tx{flex:1 1 100%}.list.set .orow .kd{flex:1 1 auto}}
 @media(max-width:440px){.tabs{grid-auto-columns:auto;gap:2px}.tabs button{font-size:12px;padding:0 7px;white-space:nowrap}}
 .orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
-.pds{display:inline-flex;gap:3px;flex:none}.pds .pd{width:10px;height:10px}
-.roles{display:flex;flex-direction:column;gap:5px;min-width:170px;flex:none}
+.pds{display:inline-flex;justify-content:flex-end;align-items:center;gap:3px;width:48px;flex:none}.pds .pd{width:10px;height:10px}.pds small{font-size:10.5px;font-weight:800;color:var(--ink3)}
+.roles{display:flex;flex-direction:column;gap:5px;width:200px;flex:none}
 .roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
-@media(max-width:420px){.roles{min-width:142px}.roles span{font-size:12px}}
+@media(max-width:420px){.roles{width:180px}.roles span{font-size:12px}}
 .rc{border-radius:var(--r-xl,28px);padding:16px 18px;margin:0 0 10px}.rc .h{display:flex;align-items:center;gap:10px}.rc .h b{font-size:18px;font-weight:800}.rc .h em{margin-left:auto;font-style:normal;font-size:12.5px;font-weight:800;letter-spacing:.03em}
 .rc p{margin:6px 0 0;font-size:14.5px;font-weight:700;color:var(--ink2)}.rc .pill{margin-top:10px;width:100%}
 .rc.ok{background:var(--gbg)}.rc.ok .h em{color:var(--ok)}.rc.bad{background:var(--rbg)}.rc.bad .h em{color:var(--bad)}.rc.na{background:var(--surf)}
@@ -266,7 +266,7 @@ const unbusy = (b) => { b.disabled = false; if (b.dataset.t) b.textContent = b.d
 /* Punkts + teksts (ne tikai krāsa) */
 function stTxt(r) { return !r || r.statuss === 'nevajag' ? 'nevajag' : r.statuss === 'darba' ? 'darbā ' + r.laiks : r.statuss === 'beidza' ? 'beidza ' + (r.beidz || '') : 'nav'; }
 function dot(r) { const s = r && r.statuss; return `<i class="pd ${s === 'darba' ? 'g' : s === 'beidza' ? 'b' : s === 'nav' ? 'r' : 'n'}" aria-hidden="true"></i>`; }
-const roleLine = (o, k) => { const P = (o[k] && o[k].ppl) || []; const dd = P.length > 1 ? `<b class="pds" title="${P.length} darbinieki">${P.map(s => dot({ statuss: s })).join('')}</b>` : dot(o[k]);
+const roleLine = (o, k) => { const P = (o[k] && o[k].ppl) || [], sh = P.length > 4 ? P.slice(0, 3) : P; const dd = `<b class="pds"${P.length > 1 ? ` title="${P.length} darbinieki"` : ''}>${P.length > 1 ? sh.map(s => dot({ statuss: s })).join('') + (P.length > 4 ? `<small>+${P.length - 3}</small>` : '') : dot(o[k])}</b>`;
   return `<span>${dd}${AM[k]}<em>${esc(stTxt(o[k]))}</em></span>`; };
 
 /* ---------- ieeja ---------- */
