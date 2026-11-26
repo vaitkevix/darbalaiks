@@ -136,6 +136,8 @@ button{cursor:pointer}
 @media(max-width:440px){.tabs{grid-auto-columns:auto;gap:2px}.tabs button{font-size:12px;padding:0 7px;white-space:nowrap}}
 .orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
 .pds{display:inline-flex;justify-content:flex-end;align-items:center;gap:3px;width:48px;flex:none}.pds .pd{width:10px;height:10px}.pds .pd.one{width:23px;border-radius:999px}.pds small{font-size:10.5px;font-weight:800;color:var(--ink3)}
+.sech{display:flex;align-items:baseline;gap:8px;margin:14px 4px 6px;font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--ink2)}.sech:first-child{margin-top:2px}.sech span{color:var(--ink3);font-weight:700}
+.tbl tr.secr td{padding-top:14px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--ink2);background:none}
 .roles{display:flex;flex-direction:column;gap:5px;width:200px;flex:none}
 .roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
 @media(max-width:420px){.roles{width:180px}.roles span{font-size:12px}}
@@ -266,6 +268,8 @@ const unbusy = (b) => { b.disabled = false; if (b.dataset.t) b.textContent = b.d
 /* Punkts + teksts (ne tikai krāsa) */
 function stTxt(r) { return !r || r.statuss === 'nevajag' ? 'nevajag' : r.statuss === 'darba' ? 'darbā ' + r.laiks : r.statuss === 'beidza' ? 'beidza ' + (r.beidz || '') : 'nav'; }
 function dot(r) { const s = r && r.statuss; return `<i class="pd ${s === 'darba' ? 'g' : s === 'beidza' ? 'b' : s === 'nav' ? 'r' : 'n'}" aria-hidden="true"></i>`; }
+const nrm = (x) => String(x || '').toLowerCase().replace(/\s+/g, ' ').trim(), isMine = (o) => !!(S.D && S.D.me && o && o.vaditajs && nrm(o.vaditajs) === nrm(S.D.me.name));
+const secH = (t, n) => `<div class="sech">${esc(t)}<span>${n}</span></div>`;
 const roleLine = (o, k) => { const P = (o[k] && o[k].ppl) || [], sh = P.length > 4 ? P.slice(0, 3) : P; const dd = `<b class="pds"${P.length > 1 ? ` title="${P.length} darbinieki"` : ''}>${P.length > 1 ? sh.map(s => dot({ statuss: s })).join('') + (P.length > 4 ? `<small>+${P.length - 3}</small>` : '') : dot(o[k]).replace('class="pd ', 'class="pd one ')}</b>`;
   return `<span>${dd}${AM[k]}<em>${esc(stTxt(o[k]))}</em></span>`; };
 
@@ -317,14 +321,15 @@ async function draw() {
 function drawObj(v) {
   const D = S.D, K = D.kopsavilkums, wd = dow(S.day) <= 5, isT = S.day === D.today;
   const inW = (o) => o.uzk.statuss === 'darba' || o.set.statuss === 'darba';
-  const VAD = [...new Set(D.objekti.map(o => o.vaditajs || ''))].sort((a, b) => !a ? 1 : !b ? -1 : a.localeCompare(b, 'lv'));
+  const VAD = [...new Set(D.objekti.map(o => o.vaditajs || ''))].sort((a, b) => !a ? 1 : !b ? -1 : (isMine({ vaditajs: b }) - isMine({ vaditajs: a })) || a.localeCompare(b, 'lv'));
   if (S.vad == null) S.vad = ls.get('dl_vad') || ''; if (S.vad && !VAD.includes(S.vad === '-' ? '' : S.vad)) S.vad = '';
   const B0 = S.vad ? D.objekti.filter(o => (o.vaditajs || '') === (S.vad === '-' ? '' : S.vad)) : D.objekti.slice();
   const cnt = { all: B0.length, darba: B0.filter(inW).length, miss: B0.filter(o => o.trukst).length, ok: B0.filter(o => !o.trukst).length };
   let L = B0.slice(); const q = S.q.toLowerCase();
   if (S.f === 'miss') L = L.filter(o => o.trukst); if (S.f === 'ok') L = L.filter(o => !o.trukst); if (S.f === 'darba') L = L.filter(inW);
   if (q) L = L.filter(o => (o.adrese + ' ' + o.kods + ' ' + o.vaditajs).toLowerCase().includes(q));
-  L.sort((a, b) => (b.trukst - a.trukst) || a.adrese.localeCompare(b.adrese, 'lv'));
+  L.sort((a, b) => (isMine(b) - isMine(a)) || (b.trukst - a.trukst) || a.adrese.localeCompare(b.adrese, 'lv'));
+  const nM = L.filter(isMine).length, secs = nM && nM < L.length;
   const gw = D.varteja, gwOk = gw.iestatita && gw.ping;
   v.innerHTML = `<div class="pt2"><h1 class="pt">Objekti</h1><small>${isT ? 'atjaunots ' + new Date().toLocaleTimeString('lv-LV', { hour: '2-digit', minute: '2-digit' }) : ''}</small></div>
     ${can(2) && !gwOk ? `<div class="banner sand">${'<span class="dot">!</span>'}<div><b>${gw.iestatita ? 'SMS telefons vēl nav sūtījis ziņas' : 'SMS vārteja vēl nav pieslēgta'}</b><span>${gw.iestatita ? 'Pārbaudiet, vai telefonā SMS Gateway ir ieslēgts.' : 'Kad administrators pieslēgs SMS telefonu, atzīmes parādīsies šeit.'}</span></div></div>` : ''}
@@ -332,10 +337,10 @@ function drawObj(v) {
     <div class="kp"><button class="mint" data-f="ok"><b>${K.kartiba}</b><span>viss kārtībā</span></button><button class="rose" data-f="miss"><b>${wd ? K.trukst : '—'}</b><span>${wd ? 'kāds nav darbā' : 'brīvdiena'}</span></button>
       <div class="sky"><b>${K.darba}</b><span>darbinieki šobrīd darbā</span></div></div>
     <div class="search"><input id="oq" placeholder="Meklēt adresi vai kodu" value="${esc(S.q)}" aria-label="Meklēt"></div>
-    ${VAD.length > 1 ? `<div class="chips vadf" id="oV" role="group" aria-label="Objektu vadītājs">${[['', 'Visi vadītāji']].concat(VAD.map(x => [x || '-', x || 'Bez vadītāja'])).map(([k, l]) => `<button type="button" data-v="${esc(k)}" class="${S.vad === k ? 'on' : ''}">${esc(l)}</button>`).join('')}</div>` : ''}
+    ${VAD.length > 1 ? `<div class="chips vadf" id="oV" role="group" aria-label="Objektu vadītājs">${[['', 'Visi vadītāji']].concat(VAD.map(x => [x || '-', x ? (isMine({ vaditajs: x }) ? 'Mani · ' + x : x) : 'Bez vadītāja'])).map(([k, l]) => `<button type="button" data-v="${esc(k)}" class="${S.vad === k ? 'on' : ''}">${esc(l)}</button>`).join('')}</div>` : ''}
     <div class="seg" style="margin:0 0 10px" id="oF">${[['all', 'Visi ' + cnt.all], ['darba', 'Darbā ' + cnt.darba], ['miss', 'Trūkst ' + cnt.miss], ['ok', 'Kārtībā ' + cnt.ok]].map(([k, l]) => `<button data-f="${k}" class="${S.f === k ? 'on' : ''}">${l}</button>`).join('')}</div>
     <div class="legend2"><span><i class="pd g"></i>darbā</span><span><i class="pd b"></i>beidza</span><span><i class="pd r"></i>nav darbā</span></div>
-    <div class="split"><div class="list">${L.map(o => `<button class="orow ${S.sel === o.anorm ? 'sel' : ''}" data-o="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>kods ${esc(o.kods)}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div><div class="roles">${roleLine(o, 'uzk')}${roleLine(o, 'set')}</div></button>`).join('')
+    <div class="split"><div class="list">${L.map((o, i) => `${secs && i === 0 ? secH('Mani objekti', nM) : ''}${secs && i === nM ? secH('Pārējie objekti', L.length - nM) : ''}<button class="orow ${S.sel === o.anorm ? 'sel' : ''}" data-o="${esc(o.anorm)}"><div class="tx"><b>${esc(o.adrese)}</b><span>kods ${esc(o.kods)}${o.vaditajs ? ' · ' + esc(o.vaditajs) : ''}</span></div><div class="roles">${roleLine(o, 'uzk')}${roleLine(o, 'set')}</div></button>`).join('')
       || `<div class="card empty">${D.objekti.length ? 'Nekas neatbilst' : 'Darba laikam vēl nav objektu.' + (can(3) ? ' Iestatījumos piešķiriet objektiem SMS kodus.' : '')}</div>`}</div><div class="pane" id="pane"></div></div>`;
   v.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { S.f = b.dataset.f; drawObj(v); });
   v.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { S.vad = b.dataset.v; ls.set('dl_vad', S.vad); drawObj(v); });
@@ -411,12 +416,13 @@ async function drawTab(v) {
   await reload();
 }
 function tabHtml() {
-  const T = S.T, R = T.rindas.slice().sort((a, b) => b.trukaDienas.length - a.trukaDienas.length || a.adrese.localeCompare(b.adrese, 'lv'));
+  const T = S.T, OM = {}; (S.D ? S.D.objekti : []).forEach(o => OM[o.anorm] = o); const tm = (r) => isMine(OM[r.anorm] || { vaditajs: r.vaditajs });
+  const R = T.rindas.slice().sort((a, b) => (tm(b) - tm(a)) || b.trukaDienas.length - a.trukaDienas.length || a.adrese.localeCompare(b.adrese, 'lv')), tM = R.filter(tm).length, tS = tM && tM < R.length, cs = T.kopa.abi ? 4 : 3;
   $('tBody').innerHTML = `<div class="card sky" style="margin:0 0 12px"><span style="font-size:13px;font-weight:700;color:var(--ink2)">Kopā nostrādāts · ${lvS(T.no)}–${lvS(T.lidz)}</span>
       <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(T.kopa.uzk + T.kopa.set + (T.kopa.abi || 0))}</div>
       <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.set)}</b><span>sētnieki</span></div><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.uzk)}</b><span>uzkopēji</span></div>${T.kopa.abi ? `<div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.abi)}</b><span>abi amati</span></div>` : ''}</div></div>
     <div class="card tbx"><table class="tbl"><thead><tr><th>Adrese</th><th class="n">Uzkop.</th><th class="n">Sētn.</th>${T.kopa.abi ? '<th class="n">Abi</th>' : ''}</tr></thead><tbody>
-      ${R.map(r => `<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small>${r.navBeigu ? `<small class="r">${r.navBeigu} ${r.navBeigu === 1 ? 'posms' : 'posmi'} bez STOP — 0 h, jālabo</small>` : ''}</td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td>${T.kopa.abi ? `<td class="n">${Hs(r.abi || 0)}</td>` : ''}</tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
+      ${R.map((r, i) => `${tS && i === 0 ? `<tr class="secr"><td colspan="${cs}">Mani objekti · ${tM}</td></tr>` : ''}${tS && i === tM ? `<tr class="secr"><td colspan="${cs}">Pārējie objekti · ${R.length - tM}</td></tr>` : ''}<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small>${r.navBeigu ? `<small class="r">${r.navBeigu} ${r.navBeigu === 1 ? 'posms' : 'posmi'} bez STOP — 0 h, jālabo</small>` : ''}</td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td>${T.kopa.abi ? `<td class="n">${Hs(r.abi || 0)}</td>` : ''}</tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
     </tbody></table></div>
     <button class="pill dk big" style="width:100%;margin-top:12px" id="tX">Lejupielādēt Excel</button>
     <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Excel failā — kopsavilkums pa objektiem un katra diena: sākums, beigas, stundas</p>`;
