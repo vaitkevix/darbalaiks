@@ -135,7 +135,7 @@ button{cursor:pointer}
 @media(max-width:600px){.list.set .orow{flex-wrap:wrap;row-gap:8px}.list.set .orow .tx{flex:1 1 100%}.list.set .orow .kd{flex:1 1 auto}}
 @media(max-width:440px){.tabs{grid-auto-columns:auto;gap:2px}.tabs button{font-size:12px;padding:0 7px;white-space:nowrap}}
 .orow .tx{flex:1;min-width:0}.orow .tx b{display:block;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.orow .tx span{font-size:12.5px;font-weight:700;color:var(--ink3)}
-.pds{display:inline-flex;justify-content:flex-end;align-items:center;gap:3px;width:48px;flex:none}.pds .pd{width:10px;height:10px}.pds small{font-size:10.5px;font-weight:800;color:var(--ink3)}
+.pds{display:inline-flex;justify-content:flex-end;align-items:center;gap:3px;width:48px;flex:none}.pds .pd{width:10px;height:10px}.pds .pd.one{width:23px;border-radius:999px}.pds small{font-size:10.5px;font-weight:800;color:var(--ink3)}
 .roles{display:flex;flex-direction:column;gap:5px;width:200px;flex:none}
 .roles span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800}.roles em{font-style:normal;margin-left:auto;color:var(--ink3);font-weight:700;white-space:nowrap}
 @media(max-width:420px){.roles{width:180px}.roles span{font-size:12px}}
@@ -266,7 +266,7 @@ const unbusy = (b) => { b.disabled = false; if (b.dataset.t) b.textContent = b.d
 /* Punkts + teksts (ne tikai krāsa) */
 function stTxt(r) { return !r || r.statuss === 'nevajag' ? 'nevajag' : r.statuss === 'darba' ? 'darbā ' + r.laiks : r.statuss === 'beidza' ? 'beidza ' + (r.beidz || '') : 'nav'; }
 function dot(r) { const s = r && r.statuss; return `<i class="pd ${s === 'darba' ? 'g' : s === 'beidza' ? 'b' : s === 'nav' ? 'r' : 'n'}" aria-hidden="true"></i>`; }
-const roleLine = (o, k) => { const P = (o[k] && o[k].ppl) || [], sh = P.length > 4 ? P.slice(0, 3) : P; const dd = `<b class="pds"${P.length > 1 ? ` title="${P.length} darbinieki"` : ''}>${P.length > 1 ? sh.map(s => dot({ statuss: s })).join('') + (P.length > 4 ? `<small>+${P.length - 3}</small>` : '') : dot(o[k])}</b>`;
+const roleLine = (o, k) => { const P = (o[k] && o[k].ppl) || [], sh = P.length > 4 ? P.slice(0, 3) : P; const dd = `<b class="pds"${P.length > 1 ? ` title="${P.length} darbinieki"` : ''}>${P.length > 1 ? sh.map(s => dot({ statuss: s })).join('') + (P.length > 4 ? `<small>+${P.length - 3}</small>` : '') : dot(o[k]).replace('class="pd ', 'class="pd one ')}</b>`;
   return `<span>${dd}${AM[k]}<em>${esc(stTxt(o[k]))}</em></span>`; };
 
 /* ---------- ieeja ---------- */
