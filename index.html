@@ -533,18 +533,19 @@ function splitPh(p) { const d = String(p || '').replace(/\D/g, ''); const c = CC
 /* Instrukcijas SMS priekšskats — tā pati loģika kā serverī (darbalaiks.js welcomeParts) */
 const LVg = { 'ā': 'a', 'č': 'c', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n', 'š': 's', 'ū': 'u', 'ž': 'z', 'Ā': 'A', 'Č': 'C', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'I', 'Ķ': 'K', 'Ļ': 'L', 'Ņ': 'N', 'Š': 'S', 'Ū': 'U', 'Ž': 'Z' };
 const smsAscii = (x) => String(x || '').replace(/[āčēģīķļņšūžĀČĒĢĪĶĻŅŠŪŽ]/g, c => LVg[c]).replace(/[—–]/g, '-').replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim();
+const smsLen = (x) => x.length + (x.match(/[|^{}\[\]~\\€]/g) || []).length;   // «|» GSM-7 aizņem 2 vietas
 function smsParts(vards, L) {
   const O = []; const seen = new Set();
   L.forEach(x => { const o = S.I.objekti.find(z => z.anorm === x.anorm); const k = o ? o.anorm : x.anorm; if (seen.has(k)) return; seen.add(k); O.push({ kods: o && o.aktivs && o.kods ? o.kods : '', adrese: o ? o.adrese : x.anorm }); });
   const v = smsAscii(String(vards || '').trim().split(/\s+/)[0]), one = O.length === 1 && O[0].kods;
   const lines = [(v ? 'Sveiki, ' + v + '!' : 'Sveiki!'), 'SMS uz so numuru:', 'START ' + (one ? O[0].kods : 'kods') + ' - sakot darbu', 'STOP - beidzot', '? - statuss'];
   if (one) lines.push('Objekts: ' + smsAscii(O[0].adrese)); else if (!O.length) lines.push('Objekta kodu pajauta vaditajam.');
-  else { lines.push('Kodi:'); O.forEach(o => lines.push((o.kods || 'bez koda') + ' ' + smsAscii(o.adrese))); }
-  const P = []; let cur = ''; for (const l0 of lines) { const l = l0.slice(0, 160); if (cur && (cur + '\n' + l).length > 160) { P.push(cur); cur = l; } else cur = cur ? cur + '\n' + l : l; } if (cur) P.push(cur);
+  else { lines.push('Kodi:'); O.forEach(o => lines.push((o.kods || 'bez koda') + ' | ' + smsAscii(o.adrese))); }
+  const P = []; let cur = ''; for (const l0 of lines) { const l = l0.slice(0, 150); if (cur && smsLen(cur + '\n' + l) > 160) { P.push(cur); cur = l; } else cur = cur ? cur + '\n' + l : l; } if (cur) P.push(cur);
   return P;
 }
 const smsBubbles = (P) => `<div style="display:flex;flex-direction:column;gap:6px">${P.map(t => `<div style="align-self:flex-start;max-width:100%;background:var(--surf);box-shadow:0 1px 2px rgba(0,0,0,.06);border-radius:var(--r-lg,20px) var(--r-lg,20px) var(--r-lg,20px) 6px;padding:10px 14px;font-size:13.5px;font-weight:600;line-height:1.4;white-space:pre-wrap;word-break:break-word">${esc(t)}</div>`).join('')}</div>
-  <p style="margin:6px 0 0 4px;font-size:12px;font-weight:700;color:var(--ink3)">${P.length === 1 ? '1 SMS' : P.length + ' SMS'} · ${P.map(t => t.length).join(' + ')} zīmes (līdz 160 vienā SMS)</p>`;
+  <p style="margin:6px 0 0 4px;font-size:12px;font-weight:700;color:var(--ink3)">${P.length === 1 ? '1 SMS' : P.length + ' SMS'} · ${P.map(smsLen).join(' + ')} zīmes (līdz 160 vienā SMS)</p>`;
 function editWorker(w) {
   const OB = S.I.objekti.filter(o => o.aktivs), n = !w; w = w || { phone: '', vards: '', amats: 'uzk', anorm: '', aktivs: 1 };
   const mineO = new Set(S.I.maniObj || []), OBm = OB.filter(o => mineO.has(o.anorm)), OBc = OB.filter(o => !mineO.has(o.anorm));
