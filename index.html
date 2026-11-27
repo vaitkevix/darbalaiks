@@ -18,9 +18,9 @@
 
 
 :root{--bg:#f1f4f2;--surf:#fff;--surf2:#f3f5f4;--ink:#17201c;--ink2:#4a534f;--ink3:#6d7672;--dark:#17201c;--ondark:#fff;
-  --mint:#d6e8e1;--sand:#f4e4b4;--sky:#d8e6f2;--rose:#f5dbe3;--lilac:#e2ddf2;--ok:#2f5d45;--warn:#6b4a00;--bad:#8a2a3b}
+  --mint:#d6e8e1;--sand:#f4e4b4;--sky:#d8e6f2;--rose:#f5dbe3;--lilac:#e2ddf2;--mauve:#ecd8ee;--ok:#2f5d45;--warn:#6b4a00;--bad:#8a2a3b}
 :root[data-theme="dark"]{--bg:#0b120f;--surf:#151d1a;--surf2:#1b2521;--ink:#eef2ef;--ink2:#b4bdb8;--ink3:#8b958f;--dark:#eef2ef;--ondark:#0b120f;
-  --mint:#1e3a32;--sand:#3d3520;--sky:#1e2f3d;--rose:#3d2530;--lilac:#2c2840;--ok:#8fd1ad;--warn:#f0c46b;--bad:#f3a0b0}
+  --mint:#1e3a32;--sand:#3d3520;--sky:#1e2f3d;--rose:#3d2530;--lilac:#2c2840;--mauve:#382540;--ok:#8fd1ad;--warn:#f0c46b;--bad:#f3a0b0}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -121,7 +121,7 @@ button{cursor:pointer}
 .copy{text-align:center;font-size:11px;font-weight:700;color:var(--ink3);margin:24px 0 0}
 
 /* --- Darba laiks --- */
-.top .lg{background:var(--rose)}
+.top .lg{background:var(--mauve)}
 :root{--g:#2f8a55;--r:#c63d3d;--gbg:var(--mint);--rbg:var(--rose)}
 :root[data-theme="dark"]{--g:#4ade80;--r:#f87171}
 .pt2{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 14px}.pt2 .pt{margin:0}.pt2 small{font-size:13px;font-weight:700;color:var(--ink3)}
@@ -197,7 +197,8 @@ html[data-theme=dark] .cfl:not(.done){background:#4a1d1a;color:#ffd7d3}
 
 </style>
 <style id="sh-polish">
-@media (min-width:1000px){.list:not(:has(.stop)){display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:10px;align-items:start}}   /* datorā saraksti kolonnās (maršruts paliek secībā) *//* pieskāriena sajūta, iPhone pietuvinājums, samazināta kustība */
+@media (min-width:1000px){.list:not(:has(.stop)){display:grid;grid-template-columns:repeat(auto-fill,minmax(min(400px,100%),1fr));gap:10px;align-items:start}}   /* datorā saraksti kolonnās (maršruts paliek secībā) *//* pieskāriena sajūta, iPhone pietuvinājums, samazināta kustība */
+:root[data-theme="dark"] .bar{background:rgba(255,255,255,.14)}:root[data-theme="dark"] .photos .add{border-color:#3a4641}:root[data-theme="dark"]{--err:#f97066}
 button:not(:disabled):active{scale:.97}
 button,.chip,.tab{-webkit-user-select:none;user-select:none;touch-action:manipulation}
 @media (max-width:600px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
@@ -582,7 +583,7 @@ function editWorker(w) {
       <p style="margin:6px 0 0;font-size:12.5px;font-weight:600;color:var(--ink2)">SMS «START kods» atzīmē amatu, kas norādīts šim objektam. «Abi» — atzīmē gan uzkopēju, gan sētnieku; stundas skaitās vienreiz. Pirmais objekts — galvenais (ja SMS bez koda).</p></div>
     <div class="checks" style="margin:0 0 12px"><label><input type="checkbox" id="wAk" ${w.aktivs ? 'checked' : ''}> Aktīvs (aizgājušam noņemiet ķeksi — nedzēš)</label>${n ? '<label><input type="checkbox" id="wSms" checked> Nosūtīt darbiniekam SMS ar instrukciju un objekta kodu</label>' : ''}</div>
     <div class="f" id="wPrevBox"><span class="lb">SMS darbiniekam izskatīsies tā</span><div id="wPrev"></div></div>
-    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px" id="wSend">Nosūtīt SMS ar instrukciju</button>'}${n || !can(3) ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:#b42318" id="wDel">Izdzēst darbinieku</button>'}`);
+    <button class="pill dk big" style="width:100%" id="wOk">Saglabāt</button>${n ? '' : '<button class="pill" style="width:100%;margin-top:8px" id="wSend">Nosūtīt SMS ar instrukciju</button>'}${n || !can(3) ? '' : '<button class="pill" style="width:100%;margin-top:8px;color:var(--err,#b42318)" id="wDel">Izdzēst darbinieku</button>'}`);
   if (s.querySelector('#wSend')) s.querySelector('#wSend').onclick = async (e) => {
     try { if (!confirm('Nosūtīt augšā redzamo SMS uz ' + w.phone + '?')) return; busy(e.target, '…');
       const r = await api('welcome', { phone: w.phone }); toast(r.sent ? 'SMS nosūtīta' : 'Nav nosūtīts: ' + (r.why || ''), r.sent ? '' : 'err'); unbusy(e.target); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
@@ -590,7 +591,7 @@ function editWorker(w) {
       const C = conf(x), open = C.filter(r => !U.has(r.a.phone + '|' + x.anorm));
       const cw = C.map(r => { const k = r.a.phone + '|' + x.anorm, on = U.has(k), nm = esc(r.d.vards || r.d.phone);
         return `<div class="cfl ${on ? 'done' : ''}"><span>${on ? `<b>${nm}</b> tiks noņemts no šī objekta, saglabājot.` : `Šajā objektā jau strādā <b>${nm}</b> · ${esc(AM[r.a.amats].toLowerCase())}. Vai noņemt veco darbinieku?`}</span><button type="button" class="pill" data-un="${esc(k)}">${on ? 'Atcelt' : 'Noņemt veco'}</button></div>`; }).join('');
-      return `<div class="card ${open.length ? 'cbad' : ''}" style="margin:0 0 8px;padding:10px 12px"><div style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><b style="flex:1;font-size:14px">${esc(o ? o.adrese : x.anorm)}${o && o.kods ? ` <span style="color:var(--ink3)">· ${esc(o.kods)}</span>` : ''}</b><button type="button" class="pill" style="min-height:32px;padding:0 12px" data-rm="${i}" aria-label="Noņemt">✕</button></div>${amC(x.amats, i)}${x.amats ? '' : '<small style="display:block;margin-top:6px;color:#b42318;font-weight:800">Izvēlieties amatu</small>'}${cw}</div>`; }).join('')
+      return `<div class="card ${open.length ? 'cbad' : ''}" style="margin:0 0 8px;padding:10px 12px"><div style="display:flex;gap:8px;align-items:center;margin:0 0 8px"><b style="flex:1;font-size:14px">${esc(o ? o.adrese : x.anorm)}${o && o.kods ? ` <span style="color:var(--ink3)">· ${esc(o.kods)}</span>` : ''}</b><button type="button" class="pill" style="min-height:32px;padding:0 12px" data-rm="${i}" aria-label="Noņemt">✕</button></div>${amC(x.amats, i)}${x.amats ? '' : '<small style="display:block;margin-top:6px;color:var(--err,#b42318);font-weight:800">Izvēlieties amatu</small>'}${cw}</div>`; }).join('')
       || '<div class="card" style="margin:0;padding:10px 12px;font-size:13.5px;font-weight:700;color:var(--ink3)">Nav objektu — pievienojiet zemāk</div>'; prev(); };
   const prev = () => { const el = $('wPrev'); if (!el) return; el.innerHTML = smsBubbles(smsParts($('wV').value || nm0, L));
     const ck = $('wSms'); if ($('wPrevBox')) $('wPrevBox').style.opacity = ck && !ck.checked ? '.45' : '1'; };
