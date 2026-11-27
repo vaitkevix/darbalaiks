@@ -125,6 +125,8 @@ button{cursor:pointer}
 :root{--g:#2f8a55;--r:#c63d3d;--gbg:var(--mint);--rbg:var(--rose)}
 :root[data-theme="dark"]{--g:#4ade80;--r:#f87171}
 .pt2{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 14px}.pt2 .pt{margin:0}.pt2 small{font-size:13px;font-weight:700;color:var(--ink3)}
+.gaidaB{width:100%;border:0;text-align:left;color:var(--ink);cursor:pointer}.gaidaB>div{flex:1;min-width:0}.gaidaB>div>span{overflow-wrap:anywhere}.gaidaB .go{font-size:24px;font-weight:800}
+.gi .acts{margin-top:0}.gi .gl{display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:var(--r-pill,999px);font-size:16px;font-weight:800;color:var(--ink);text-decoration:none}
 .kp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 12px}@media(max-width:560px){.kp{gap:8px}.kp>button,.kp>div{padding:12px}.kp b{font-size:24px}.kp span{font-size:12px;line-height:1.25;display:block}}
 .kp>button,.kp>div{border:0;text-align:left;border-radius:var(--r-xl,28px);padding:14px 16px}.kp b{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.05}.kp span{font-size:13px;font-weight:700;color:var(--ink2)}
 .dayb{display:flex;align-items:center;gap:8px;margin:0 0 12px}.dayb .lbl{flex:1;text-align:center;font-weight:800;font-size:15px}
@@ -285,7 +287,7 @@ function logout() { ls.del(PINK); S.pin = ''; S.D = null; closeSheet(); showGate
 
 async function load() {
   const r = await api('boot', S.day ? { datums: S.day } : {});
-  S.D = r; if (!S.day) S.day = r.today;
+  S.D = r; S.G = null; if (!S.day) S.day = r.today;
   $('vGate').hidden = true; $('vApp').hidden = false;
   $('hdSub').textContent = r.me.name + ' · ' + (ROLE[r.me.role] || r.me.role);
   $('btnMe').textContent = r.me.name.replace(/^SIA\s+/i, '').split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase();
@@ -338,6 +340,7 @@ function drawObj(v) {
   const gw = D.varteja, gwOk = gw.iestatita && gw.ping;
   v.innerHTML = `<div class="pt2"><h1 class="pt">Objekti</h1><small>${isT ? 'atjaunots ' + new Date().toLocaleTimeString('lv-LV', { hour: '2-digit', minute: '2-digit' }) : ''}</small></div>
     ${can(2) && !gwOk ? `<div class="banner sand">${'<span class="dot">!</span>'}<div><b>${gw.iestatita ? 'SMS telefons vēl nav sūtījis ziņas' : 'SMS vārteja vēl nav pieslēgta'}</b><span>${gw.iestatita ? 'Pārbaudiet, vai telefonā SMS Gateway ir ieslēgts.' : 'Kad administrators pieslēgs SMS telefonu, atzīmes parādīsies šeit.'}</span></div></div>` : ''}
+    ${can(2) ? '<div id="gaidaBox"></div>' : ''}
     <div class="dayb"><button class="ib" data-d="-1" aria-label="Iepriekšējā diena">‹</button><span class="lbl">${esc(lvLong(S.day))}${isT ? ' · šodien' : ''}</span><button class="ib" data-d="1" aria-label="Nākamā diena" ${isT ? 'disabled' : ''}>›</button></div>
     <div class="kp"><button class="mint" data-f="ok"><b>${K.kartiba}</b><span>viss kārtībā</span></button><button class="rose" data-f="miss"><b>${wd ? K.trukst : '—'}</b><span>${wd ? 'kāds nav darbā' : 'brīvdiena'}</span></button>
       <div class="sky"><b>${K.darba}</b><span>darbinieki šobrīd darbā</span></div></div>
@@ -353,6 +356,41 @@ function drawObj(v) {
   const oq = $('oq'); oq.oninput = () => { S.q = oq.value; const p = oq.selectionStart; drawObj(v); const n = $('oq'); n.focus(); n.setSelectionRange(p, p); };
   v.querySelectorAll('[data-o]').forEach(b => b.onclick = () => openObj(b.dataset.o));
   if (S.sel && innerWidth >= 1000) openObj(S.sel, true);
+  if (can(2)) gaidaCard();
+}
+/* ---------- Gaida apstiprinājumu: SMS labojumi (LABOT), slimība, atvaļinājums ---------- */
+const shortNm = (n) => { const p = String(n || '').trim().split(/\s+/); return p.length > 1 ? p[0] + ' ' + p[p.length - 1][0] + '.' : (p[0] || ''); };
+const dm = (d) => d ? d.slice(8, 10) + '.' + d.slice(5, 7) + '.' : '';
+function gaidaTxt(g) {
+  const who = shortNm(g.vards) || g.phone, adr = g.adrese || g.anorm || '';
+  if (g.tips === 'labot') { const vk = S.D && g.datums === addDays(S.D.today, -1) ? ' (VAKAR)' : '';
+    return [who, dm(g.datums) + vk, (g.sak ? g.sak + '–' : 'līdz ') + (g.beidz || '…'), adr].filter(Boolean).join(' · '); }
+  const per = g.tips === 'atv' ? dm(g.no) + '–' + dm(g.lidz) : 'no ' + dm(g.no) + (g.lidz ? ' līdz ' + dm(g.lidz) : '');
+  return [who, g.tips === 'slims' ? 'Slimība' : 'Atvaļinājums', per, adr].filter(Boolean).join(' · ');
+}
+async function gaidaCard(force) {
+  const box = $('gaidaBox'); if (!box) return;
+  if (force || !S.G || Date.now() - S.G.t > 60000) { try { S.G = { t: Date.now(), L: (await api('gaida')).gaida || [] }; } catch (e) { S.G = { t: Date.now(), L: [] }; } }
+  const b = $('gaidaBox'); if (!b) return; const n = S.G.L.length;
+  b.innerHTML = n ? `<button type="button" class="banner sand gaidaB" id="gaidaBtn"><span class="dot">!</span><div><b>Gaida apstiprinājumu · ${n}</b><span>${esc(gaidaTxt(S.G.L[0]))}${n > 1 ? ' un vēl ' + (n - 1) : ''}</span></div><span class="go" aria-hidden="true">›</span></button>` : '';
+  const gb = $('gaidaBtn'); if (gb) gb.onclick = gaidaSheet;
+}
+function gaidaSheet() {
+  const L = (S.G && S.G.L) || [];
+  const s = sheet(`<div class="hd"><h3>Gaida apstiprinājumu · ${L.length}</h3>${XB}</div>
+    <p style="margin:0 0 12px;font-size:13.5px;font-weight:700;color:var(--ink2)">Darbinieki atsūtīja SMS. Labojumu apstiprinot, atzīmes ieraksta tabelē. Slimību un atvaļinājumu noformējiet Personālā.</p>
+    <div class="list">${L.map(g => `<div class="card gi" data-g="${esc(g.id)}"><b style="display:block;font-weight:800;font-size:15px;overflow-wrap:anywhere">${esc(gaidaTxt(g))}</b>
+      <span style="display:block;margin:4px 0 10px;font-size:12.5px;font-weight:700;color:var(--ink3)">${g.tips === 'labot' ? 'Laika labojums' : g.tips === 'slims' ? 'Slimības ziņa' : 'Atvaļinājuma pieteikums'}${g.phone ? ' · ' + esc(g.phone) : ''}${g.laiks ? ' · saņemts ' + esc(g.laiks.slice(5).replace(/^(\d\d)-(\d\d)/, '$2.$1.')) : ''}</span>
+      ${g.tips === 'labot' ? '<div class="acts"><button class="btn-rose" data-ok="0">Noraidīt</button><button class="btn-dk" data-ok="1">Apstiprināt</button></div>'
+        : '<div class="acts"><a class="btn-lt gl" href="/sh/#pers" target="_top" rel="noopener">Personāls</a><button class="btn-dk" data-ok="1">Sapratu</button></div>'}</div>`).join('') || '<div class="card empty">Nekas negaida</div>'}</div>`);
+  s.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => { const c = b.closest('[data-g]'), id = c.dataset.g, ok = b.dataset.ok === '1', g = L.find(x => x.id === id);
+    if (!ok && !confirm('Noraidīt šo labojumu? Atzīmes netiks mainītas.')) return;
+    c.querySelectorAll('button').forEach(x => x.disabled = true); busy(b, '…');
+    try { await api('apstiprinat', { id, ok }); S.G.L = S.G.L.filter(x => x.id !== id); c.remove();
+      toast(g && g.tips === 'labot' ? (ok ? 'Apstiprināts — atzīmes ierakstītas' : 'Noraidīts') : 'Atzīmēts kā redzēts');
+      if (!S.G.L.length) closeSheet(); else s.querySelector('h3').textContent = 'Gaida apstiprinājumu · ' + S.G.L.length;
+      gaidaCard(); if (ok && g && g.tips === 'labot') { load().catch(() => 0); if (S.sel) openObj(S.sel, true); } }
+    catch (err) { toast(err.message, 'err'); c.querySelectorAll('button').forEach(x => x.disabled = false); unbusy(b); if (/apstrādāts/.test(err.message)) gaidaCard(true); } });
 }
 async function openObj(anorm, quiet) {
   S.sel = anorm; const wide = innerWidth >= 1000, pane = $('pane');
@@ -361,8 +399,10 @@ async function openObj(anorm, quiet) {
   if (wide && pane && !quiet) box.innerHTML = '<div class="skel"></div><div class="skel"></div>';
   try { const r = await api('objekts', { anorm, datums: S.day }); S.O = r; objHtml(box, r, wide); } catch (err) { box.innerHTML = `<div class="card empty">${esc(err.message)}</div>`; }
 }
+/* Labot atzīmes: admins visur, vadītājs — savos objektos (maniObj no iestatījumiem vai vadītāja vārds objektam) */
+const canEd = (an) => can(3) || (can(2) && ((S.I && (S.I.maniObj || []).indexOf(an) !== -1) || isMine((S.D.objekti || []).find(x => x.anorm === an))));
 function objHtml(box, r, wide) {
-  const o = r.objekts, isT = r.datums === S.D.today;
+  const o = r.objekts, isT = r.datums === S.D.today, ED = canEd(o.anorm);
   const rc = (k) => { const x = o[k]; if (x.statuss === 'nevajag') return `<div class="rc na"><div class="h">${dot(x)}<b>${AM[k]}</b><em>NEVAJAG</em></div></div>`;
     const okk = x.statuss !== 'nav', P = r.posmi.filter(p => p.amats === k), PP = (r.ppl && r.ppl[k]) || [];
     if (PP.length > 1) { const tm = (q) => q.posmi.map(p => esc(p.sak) + '–' + (p.beidz ? esc(p.beidz) + ' · ' + H(p.min) : (isT ? 'tagad' : 'nav STOP'))).join(', ');
@@ -379,8 +419,8 @@ function objHtml(box, r, wide) {
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Šonedēļ</b><div class="wk" style="margin-top:10px"><span></span>${WD.map(w => `<span>${w}</span>`).join('')}
       <span class="l">Uzkopējs</span>${r.nedela.map(d => wcell(d.uzk)).join('')}<span class="l">Sētnieks</span>${r.nedela.map(d => wcell(d.set)).join('')}</div>
       <div class="legend2" style="margin:10px 0 0"><span><i class="pd g"></i>bija</span><span><i class="pd r"></i>nebija</span><span><i class="pd n"></i>brīvs / vēl nav</span></div></div>
-    ${can(3) && r.posmi.length ? `<div class="card" style="margin:0 0 10px"><b style="font-weight:800">Atzīmes (labot)</b>${r.posmi.map((p, i) => `<div class="kv"><span>${AM[p.amats]}${p.vards ? ' · ' + esc(p.vards) : ''}</span><button class="pill" style="min-height:36px" data-ed="${i}">${esc(p.sak)}–${esc(p.beidz || '…')}</button></div>`).join('')}</div>` : ''}
-    ${can(3) ? `<button class="pill" style="width:100%;margin:0 0 10px" id="addM">+ Pievienot atzīmi</button>` : ''}
+    ${ED && r.posmi.length ? `<div class="card" style="margin:0 0 10px"><b style="font-weight:800">Atzīmes (labot)</b>${r.posmi.map((p, i) => `<div class="kv"><span>${AM[p.amats]}${p.vards ? ' · ' + esc(p.vards) : ''}</span><button class="pill" style="min-height:36px" data-ed="${i}">${esc(p.sak)}–${esc(p.beidz || '…')}</button></div>`).join('')}</div>` : ''}
+    ${ED ? `<button class="pill" style="width:100%;margin:0 0 10px" id="addM">+ Pievienot atzīmi</button>` : ''}
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Darbinieki</b>${r.darbinieki.map(w => `<div class="kv"><span>${esc(w.vards || AM[w.amats])}${w.vards ? ' · ' + AM[w.amats].toLowerCase() : ''}${w.aktivs ? '' : ' · neaktīvs'}</span>${can(2) && w.phone ? `<a href="tel:${esc(w.phone)}" style="color:var(--ink);font-weight:800">${esc(w.phone)}</a>` : `<b>${esc(w.phone)}</b>`}</div>`).join('') || '<div class="kv"><span>Nav piesaistītu darbinieku</span></div>'}</div>
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">${isT ? 'Šodienas' : 'Dienas'} SMS</b><div style="margin-top:6px">${r.sms.map(smsLine).join('') || '<div class="kv"><span>Nav</span></div>'}</div></div>
     <div class="card"><div class="kv"><span>${MON[+r.datums.slice(5, 7) - 1][0].toUpperCase() + MON[+r.datums.slice(5, 7) - 1].slice(1)} · uzkopējs</span><b>${H(r.menesis.uzk)}</b></div><div class="kv"><span>sētnieks</span><b>${H(r.menesis.set)}</b></div>${r.menesis.abi ? `<div class="kv"><span>abi (uzkopējs + sētnieks)</span><b>${H(r.menesis.abi)}</b></div>` : ''}</div>`;
@@ -536,12 +576,12 @@ function setBody() {
   const C = I.cfg;
   B.innerHTML = `<div class="card f"><span class="lb">SMS telefona numurs (uz uzlīmēm)</span>${fld('cN', 'Numurs', C.numurs, 'inputmode="tel" placeholder="+371 2…"')}</div>
     <div class="card f"><span class="lb">Atgādinājumi darba dienās</span><div class="row2">${fld('cR', 'No rīta — kam nav atzīmes', C.rits, 'type="time"')}${fld('cV', 'Vakarā — kas nav sūtījis STOP', C.vakars, 'type="time"')}</div>
-      <div class="checks"><label><input type="checkbox" id="cA" ${C.atgadinat ? 'checked' : ''}> Sūtīt atgādinājumus automātiski</label></div></div>
+      <div class="checks"><label><input type="checkbox" id="cA" ${C.atgadinat ? 'checked' : ''}> Sūtīt atgādinājumus automātiski</label><label><input type="checkbox" id="cBr" ${C.brivdienas ? 'checked' : ''}> Atgādinājumi arī brīvdienās</label></div></div>
     <button class="pill dk big" style="width:100%;margin:0 0 12px" id="cSave">Saglabāt</button>
     <div class="card"><b style="font-weight:800">SMS vārtejas pieslēgšana</b>
       <p style="margin:6px 0 10px;font-size:13.5px;font-weight:700;color:var(--ink2)">1) Telefonā «SMS Gateway for Android» → Cloud server → Start. 2) Administrators ieliek Worker noslēpumus SMS_USER, SMS_PASS un DL_HOOK_KEY. 3) Spiediet pogu — telefons sāks sūtīt ienākošās SMS uz sistēmu.</p>
       <button class="pill" style="width:100%" id="cHook">Pieslēgt SMS telefonu (webhook)</button><div id="cHr" style="margin-top:8px;font-size:13px;font-weight:700;color:var(--ink2)"></div></div>`;
-  $('cSave').onclick = async (e) => { busy(e.target, '…'); try { const r = await api('saveCfg', { numurs: $('cN').value, rits: $('cR').value, vakars: $('cV').value, atgadinat: $('cA').checked }); I.cfg = r.cfg; toast('Saglabāts'); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
+  $('cSave').onclick = async (e) => { busy(e.target, '…'); try { const r = await api('saveCfg', { numurs: $('cN').value, rits: $('cR').value, vakars: $('cV').value, atgadinat: $('cA').checked, brivdienas: $('cBr').checked }); I.cfg = r.cfg; toast('Saglabāts'); setBody(); } catch (err) { toast(err.message, 'err'); unbusy(e.target); } };
   $('cHook').onclick = async (e) => { busy(e.target, 'Pieslēdz…'); try { const r = await api('registerHook'); $('cHr').textContent = r.rezultats.join(' · '); toast('Pieprasījums nosūtīts'); } catch (err) { $('cHr').textContent = err.message; } finally { unbusy(e.target); } };
 }
 /* Valsts kodi tālrunim (populārākie augšā) */
