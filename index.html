@@ -159,6 +159,14 @@ html[data-theme=dark] .cfl:not(.done){background:#4a1d1a;color:#ffd7d3}
 .tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th{font-size:12px;font-weight:800;color:var(--ink3);text-align:left;padding:8px 6px}.tbl td{padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);font-weight:700}
 .tbl .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}.tbl small{display:block;font-size:12px;font-weight:700}.tbl small.r{color:var(--bad)}.tbl small.g{color:var(--ok)}
 .tbx{overflow-x:auto}
+.seg2{display:flex;gap:4px;padding:4px;margin:0 0 12px;border-radius:999px;background:color-mix(in srgb,var(--ink) 6%,transparent)}.seg2 button{flex:1;min-height:44px;border:0;border-radius:999px;background:none;font:inherit;font-weight:800;font-size:14px;color:var(--ink2);cursor:pointer}.seg2 .on{background:var(--surf);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tbl small.b{color:var(--ink3)}
+.td{padding:0}.tdb{font-size:12.5px;min-width:max-content}.tdb th,.tdb td{padding:6px 3px}.tdb .nm{position:sticky;left:0;z-index:1;background:var(--surf);min-width:150px;max-width:180px;padding-left:12px;white-space:normal}.tdb .nm b{display:block;font-weight:800;overflow-wrap:anywhere}.tdb .nm small{font-weight:600;color:var(--ink3)}
+.tdb th.dc,.tdb td.dc{min-width:30px;text-align:center;font-variant-numeric:tabular-nums}.tdb th.dc small{display:block;font-size:10.5px;font-weight:700;color:var(--ink3)}.tdb .we{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.tdb .k-a,.lk.k-a{background:color-mix(in srgb,#3b82f6 18%,transparent);color:var(--ink);font-weight:800}.tdb .k-b,.lk.k-b{background:color-mix(in srgb,#f59e0b 22%,transparent);color:var(--ink);font-weight:800}.tdb .k-x,.lk.k-x{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad);font-weight:800}.tdb .k-sv,.lk.k-sv{background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.tdb td.n.r,.tdb .r{color:var(--bad)}
+.tleg{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 10px}.tleg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink2)}.lk{display:inline-block;min-width:22px;height:20px;padding:0 4px;border-radius:6px;font-size:11px;line-height:20px;text-align:center}
+.nrm .kv span{color:var(--ink2)}.nrm b.r{color:var(--bad)}.nrm .nw{margin:8px 0 0;font-size:13px;font-weight:700;color:var(--bad)}.nrm.lo{box-shadow:inset 3px 0 0 var(--bad)}
 .set .orow{flex-wrap:wrap}.set input.kd{width:84px;height:44px;border:0;border-radius:var(--r-md,14px);background:var(--surf2);text-align:center;font-size:16px;font-weight:800}
 .tg{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:0;border-radius:var(--r-pill,999px);background:var(--surf2);font-size:12.5px;font-weight:800}.tg.on{background:var(--dark);color:var(--ondark)}
 /* dators: sānu izvēlne + saraksts + izvēlētā objekta panelis */
@@ -382,7 +390,9 @@ function gaidaSheet() {
     <div class="list">${L.map(g => `<div class="card gi" data-g="${esc(g.id)}"><b style="display:block;font-weight:800;font-size:15px;overflow-wrap:anywhere">${esc(gaidaTxt(g))}</b>
       <span style="display:block;margin:4px 0 10px;font-size:12.5px;font-weight:700;color:var(--ink3)">${g.tips === 'labot' ? 'Laika labojums' : g.tips === 'slims' ? 'Slimības ziņa' : 'Atvaļinājuma pieteikums'}${g.phone ? ' · ' + esc(g.phone) : ''}${g.laiks ? ' · saņemts ' + esc(g.laiks.slice(5).replace(/^(\d\d)-(\d\d)/, '$2.$1.')) : ''}</span>
       ${g.tips === 'labot' ? '<div class="acts"><button class="btn-rose" data-ok="0">Noraidīt</button><button class="btn-dk" data-ok="1">Apstiprināt</button></div>'
+        : g.tips === 'slims' ? `<div class="acts"><button class="btn-lt" data-ok="1">Sapratu</button><button class="btn-dk" data-promb="1">Ierakstīt prombūtnē</button></div>`
         : '<div class="acts"><a class="btn-lt gl" href="/sh/#pers" target="_top" rel="noopener">Personāls</a><button class="btn-dk" data-ok="1">Sapratu</button></div>'}</div>`).join('') || '<div class="card empty">Nekas negaida</div>'}</div>`);
+  s.querySelectorAll('[data-promb]').forEach(b => b.onclick = () => { const c = b.closest('[data-g]'), g = L.find(x => x.id === c.dataset.g); if (g) prombSheet(g); });
   s.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => { const c = b.closest('[data-g]'), id = c.dataset.g, ok = b.dataset.ok === '1', g = L.find(x => x.id === id);
     if (!ok && !confirm('Noraidīt šo labojumu? Atzīmes netiks mainītas.')) return;
     c.querySelectorAll('button').forEach(x => x.disabled = true); busy(b, '…');
@@ -391,6 +401,16 @@ function gaidaSheet() {
       if (!S.G.L.length) closeSheet(); else s.querySelector('h3').textContent = 'Gaida apstiprinājumu · ' + S.G.L.length;
       gaidaCard(); if (ok && g && g.tips === 'labot') { load().catch(() => 0); if (S.sel) openObj(S.sel, true); } }
     catch (err) { toast(err.message, 'err'); c.querySelectorAll('button').forEach(x => x.disabled = false); unbusy(b); if (/apstrādāts/.test(err.message)) gaidaCard(true); } });
+}
+/* C3: SMS «SLIMS» → Personāla prombūtņu reģistrs (slimības lapa B); C4 — Aizvietošanā izveidojas melnraksts */
+function prombSheet(g) {
+  const s = sheet(`<div class="hd"><h3>Ierakstīt prombūtnē</h3>${XB}</div>
+    <p style="margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink2)">${esc(shortNm(g.vards) || g.phone)} · slimības lapa B no ${esc(dm(g.no || S.D.today))}. Tabelē šīs dienas būs «B», nevis «trūkst»; Aizvietošanā izveidosies melnraksts.</p>
+    ${fld('pbLi', 'Līdz (ja zināms)', g.lidz || '', 'type="date"')}
+    <div class="acts" style="margin-top:12px"><button class="btn-lt" data-x>Atcelt</button><button class="btn-dk" id="pbGo">Ierakstīt</button></div>`);
+  $('pbGo').onclick = async () => { const b = $('pbGo'); busy(b, '…');
+    try { await api('slimsPromb', { id: g.id, lidz: $('pbLi').value }); S.G.L = S.G.L.filter(x => x.id !== g.id); closeSheet(); toast('Ierakstīts prombūtnē'); gaidaCard(); }
+    catch (err) { toast(err.message, 'err'); unbusy(b); if (/apstrādāts/.test(err.message)) gaidaCard(true); } };
 }
 async function openObj(anorm, quiet) {
   S.sel = anorm; const wide = innerWidth >= 1000, pane = $('pane');
@@ -416,6 +436,10 @@ function objHtml(box, r, wide) {
   box.innerHTML = `${wide ? '' : ''}<h2 style="margin:0;font-size:24px;font-weight:800;letter-spacing:-.02em">${esc(o.adrese)}</h2>
     <p style="margin:4px 0 14px;font-size:14px;font-weight:700;color:var(--ink3)">SMS kods <b style="color:var(--ink)">${esc(o.kods)}</b> · ${esc(lvLong(r.datums))}</p>
     ${rc('uzk')}${rc('set')}
+    ${r.norma ? (() => { const n = r.norma, pct = n.pagNorma ? Math.round(n.pag / n.pagNorma * 100) : 100, lo = n.pagNorma && pct < 85;
+      return `<div class="card nrm${lo ? ' lo' : ''}" style="margin:0 0 10px"><div class="kv" style="border:0;padding-top:0"><b style="font-weight:800">Norma pret faktu</b><span>norma ${String(n.ned).replace('.', ',')} h nedēļā</span></div>
+        <div class="kv"><span>Šonedēļ</span><b>fakts ${String(n.sis).replace('.', ',')} h</b></div><div class="kv"><span>Pagājušā nedēļa</span><b class="${lo ? 'r' : ''}">${String(n.pag).replace('.', ',')} h no ${String(n.pagNorma).replace('.', ',')} h · ${pct}%</b></div>
+        ${lo ? '<p class="nw">Fakts mazāks par 85 % no normas — pārbaudiet, vai darbinieks strādā pilnu laiku.</p>' : ''}</div>`; })() : ''}
     <div class="card" style="margin:0 0 10px"><b style="font-weight:800">Šonedēļ</b><div class="wk" style="margin-top:10px"><span></span>${WD.map(w => `<span>${w}</span>`).join('')}
       <span class="l">Uzkopējs</span>${r.nedela.map(d => wcell(d.uzk)).join('')}<span class="l">Sētnieks</span>${r.nedela.map(d => wcell(d.set)).join('')}</div>
       <div class="legend2" style="margin:10px 0 0"><span><i class="pd g"></i>bija</span><span><i class="pd r"></i>nebija</span><span><i class="pd n"></i>brīvs / vēl nav</span></div></div>
@@ -456,9 +480,13 @@ function smsLine(x) { const out = x.virziens === 'izej', bad = /nezināms|neder�
 /* ---------- Tabele ---------- */
 async function drawTab(v) {
   const t = S.D.today; if (!S.tNo) { S.tNo = t.slice(0, 8) + '01'; S.tLi = t; }
-  v.innerHTML = `<h1 class="pt">Tabele</h1><div class="row2" style="margin:0 0 12px">${fld('tNo', 'No', S.tNo, 'type="date"')}${fld('tLi', 'Līdz', S.tLi, 'type="date"')}</div>
+  const M = can(2) ? (S.tMode || 'obj') : 'obj';
+  v.innerHTML = `<h1 class="pt">Tabele</h1>${can(2) ? `<div class="seg2" id="tMode" role="tablist"><button data-v="obj" class="${M === 'obj' ? 'on' : ''}">Pa objektiem</button><button data-v="darb" class="${M === 'darb' ? 'on' : ''}">Pa darbiniekiem</button></div>` : ''}
+    <div class="row2" style="margin:0 0 12px">${fld('tNo', 'No', S.tNo, 'type="date"')}${fld('tLi', 'Līdz', S.tLi, 'type="date"')}</div>
     <div class="chips" style="margin:-4px 0 12px" id="tQ"><button data-m="0">Šis mēnesis</button><button data-m="-1">Iepriekšējais mēnesis</button></div><div id="tBody"><div class="skel"></div><div class="skel"></div></div>`;
-  const reload = async () => { S.tNo = $('tNo').value; S.tLi = $('tLi').value; try { S.T = await api('tabele', { no: S.tNo, lidz: S.tLi }); tabHtml(); } catch (err) { $('tBody').innerHTML = `<div class="card empty">${esc(err.message)}</div>`; } };
+  const reload = async () => { S.tNo = $('tNo').value; S.tLi = $('tLi').value; $('tBody').innerHTML = '<div class="skel"></div><div class="skel"></div>';
+    try { if (M === 'darb') { S.TD = await api('tabeleDarb', { no: S.tNo, lidz: S.tLi }); tabDarbHtml(); } else { S.T = await api('tabele', { no: S.tNo, lidz: S.tLi }); tabHtml(); } } catch (err) { $('tBody').innerHTML = `<div class="card empty">${esc(err.message)}</div>`; } };
+  if ($('tMode')) $('tMode').onclick = (e) => { const b = e.target.closest('[data-v]'); if (!b || b.dataset.v === M) return; S.tMode = b.dataset.v; drawTab(v); };
   $('tNo').onchange = reload; $('tLi').onchange = reload;
   $('tQ').onclick = (e) => { const b = e.target.closest('[data-m]'); if (!b) return; const d = new Date(t + 'T12:00:00Z'); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + +b.dataset.m);
     const a = d.toISOString().slice(0, 10), e2 = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).toISOString().slice(0, 10); $('tNo').value = a; $('tLi').value = e2 < t ? e2 : t; reload(); };
@@ -471,11 +499,51 @@ function tabHtml() {
       <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(T.kopa.uzk + T.kopa.set + (T.kopa.abi || 0))}</div>
       <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.set)}</b><span>sētnieki</span></div><div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.uzk)}</b><span>uzkopēji</span></div>${T.kopa.abi ? `<div style="background:var(--surf)"><b style="font-size:20px">${Hs(T.kopa.abi)}</b><span>abi amati</span></div>` : ''}</div></div>
     <div class="card tbx"><table class="tbl"><thead><tr><th>Adrese</th><th class="n">Uzkop.</th><th class="n">Sētn.</th>${T.kopa.abi ? '<th class="n">Abi</th>' : ''}</tr></thead><tbody>
-      ${R.map((r, i) => `${tS && i === 0 ? `<tr class="secr"><td colspan="${cs}">Mani objekti · ${tM}</td></tr>` : ''}${tS && i === tM ? `<tr class="secr"><td colspan="${cs}">Pārējie objekti · ${R.length - tM}</td></tr>` : ''}<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small>${r.navBeigu ? `<small class="r">${r.navBeigu} ${r.navBeigu === 1 ? 'posms' : 'posmi'} bez STOP — 0 h, jālabo</small>` : ''}</td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td>${T.kopa.abi ? `<td class="n">${Hs(r.abi || 0)}</td>` : ''}</tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
+      ${R.map((r, i) => `${tS && i === 0 ? `<tr class="secr"><td colspan="${cs}">Mani objekti · ${tM}</td></tr>` : ''}${tS && i === tM ? `<tr class="secr"><td colspan="${cs}">Pārējie objekti · ${R.length - tM}</td></tr>` : ''}<tr><td>${esc(r.adrese)}<small class="${r.trukaDienas.length ? 'r' : 'g'}">${r.trukaDienas.length ? r.trukaDienas.length + (r.trukaDienas.length === 1 ? ' dienu' : ' dienas') + ' kāds nebija darbā' + (r.trukaDienas.length <= 6 ? ': ' + r.trukaDienas.map(lvS).join(', ') : '') : 'visas darba dienas darbā'}</small>${r.prombDienas && r.prombDienas.length ? `<small class="b">${r.prombDienas.length} d. darbinieks prombūtnē (A/B)</small>` : ''}${r.navBeigu ? `<small class="r">${r.navBeigu} ${r.navBeigu === 1 ? 'posms' : 'posmi'} bez STOP — 0 h, jālabo</small>` : ''}</td><td class="n">${Hs(r.uzk)}</td><td class="n">${Hs(r.set)}</td>${T.kopa.abi ? `<td class="n">${Hs(r.abi || 0)}</td>` : ''}</tr>`).join('') || '<tr><td colspan="3">Nav objektu</td></tr>'}
     </tbody></table></div>
     <button class="pill dk big" style="width:100%;margin-top:12px" id="tX">Lejupielādēt Excel</button>
     <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Excel failā — kopsavilkums pa objektiem un katra diena: sākums, beigas, stundas</p>`;
   $('tX').onclick = (e) => xlsx(e.target);
+}
+/* C1: tabele pa darbiniekiem — dienas × stundas, kodi A/B/…, «X» trūkst */
+const KC = { A: 'a', B: 'b', S: 'b', AB: 'a', M: 'a', C: 'a', sv: 'sv', X: 'x' };
+const hD = (m) => m ? String(Math.round(m / 6) / 10).replace('.', ',') : '';
+function tabDarbHtml() {
+  const T = S.TD, R = T.rows.slice().sort((a, b) => b.X - a.X || a.vards.localeCompare(b.vards, 'lv')), tot = R.reduce((n, r) => n + r.min, 0), X = R.reduce((n, r) => n + r.X, 0);
+  const cell = (r, d) => { const k = r.kods[d.d], m = r.h[d.d]; return `<td class="dc ${k ? 'k-' + KC[k] : ''}${d.w > 5 || d.sv ? ' we' : ''}" title="${esc(lvS(d.d) + (k ? ' · ' + (T.kodi[k] || k) : ''))}">${k && k !== 'sv' ? esc(k) : hD(m)}</td>`; };
+  $('tBody').innerHTML = `<div class="card sky" style="margin:0 0 12px"><span style="font-size:13px;font-weight:700;color:var(--ink2)">${R.length} darbinieki · ${lvS(T.no)}–${lvS(T.lidz)}</span>
+      <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(tot)}</div>
+      <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${R.reduce((n, r) => n + r.A, 0)}</b><span>d. atvaļinājumā (A)</span></div><div style="background:var(--surf)"><b style="font-size:20px">${R.reduce((n, r) => n + r.B, 0)}</b><span>d. slimo (B)</span></div><div style="background:var(--surf)"><b style="font-size:20px;color:${X ? 'var(--bad)' : 'inherit'}">${X}</b><span>d. trūkst (X)</span></div></div></div>
+    <div class="legend2 tleg"><span><b class="lk k-a">A</b>atvaļinājums</span><span><b class="lk k-b">B</b>slimība</span><span><b class="lk k-a">AB · M · C</b>cita prombūtne</span><span><b class="lk k-x">X</b>trūkst</span><span><b class="lk k-sv"></b>svētki / brīvdiena</span></div>
+    <div class="card tbx td"><table class="tbl tdb"><thead><tr><th class="nm">Darbinieks</th>${T.days.map(d => `<th class="dc${d.w > 5 || d.sv ? ' we' : ''}">${+d.d.slice(8)}<small>${WD[d.w - 1]}</small></th>`).join('')}<th class="n">Kopā</th><th class="n">X</th></tr></thead><tbody>
+      ${R.map(r => `<tr><td class="nm"><b>${esc(r.vards || r.phone)}</b><small>${esc(AM[r.amats] || '')}${r.objekti.length ? ' · ' + esc(r.objekti[0]) + (r.objekti.length > 1 ? ' +' + (r.objekti.length - 1) : '') : ''}${r.navBeigu ? ' · <span class="r">' + r.navBeigu + ' bez STOP</span>' : ''}</small></td>${T.days.map(d => cell(r, d)).join('')}<td class="n">${Hs(r.min)}</td><td class="n${r.X ? ' r' : ''}">${r.X || ''}</td></tr>`).join('') || `<tr><td colspan="${T.days.length + 3}">Nav darbinieku</td></tr>`}
+    </tbody></table></div>
+    <div class="row2" style="margin-top:12px"><button class="pill dk big" id="tdX">Excel</button><button class="pill big" id="tdC">CSV</button></div>
+    <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Svētku dienas un apstiprināti atvaļinājumi / prombūtnes (Personāls) nav «trūkst»</p>`;
+  $('tdX').onclick = (e) => xlsxDarb(e.target); $('tdC').onclick = () => csvDarb();
+}
+function darbRows() { const T = S.TD; return T.rows.map(r => [r.vards || r.phone, AM[r.amats] || ''].concat(T.days.map(d => { const k = r.kods[d.d]; return k && k !== 'sv' ? k : r.h[d.d] ? Math.round(r.h[d.d] / 6) / 10 : ''; }), [Math.round(r.min / 6) / 10, r.dienas, r.A, r.B, r.X])); }
+function csvDarb() {
+  const T = S.TD, head = ['Darbinieks', 'Amats'].concat(T.days.map(d => lvS(d.d)), ['Kopā h', 'Dienas', 'A', 'B', 'Trūkst']);
+  const q = (v) => { v = typeof v === 'number' ? String(v).replace('.', ',') : String(v == null ? '' : v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const txt = '\ufeff' + [head].concat(darbRows()).map(r => r.map(q).join(';')).join('\r\n'), a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); a.download = 'SH tabele darbinieki ' + T.no + ' ' + T.lidz + '.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+async function xlsxDarb(btn) {
+  busy(btn, 'Gatavo…');
+  try { await loadX(); const T = S.TD, wb = new ExcelJS.Workbook(); wb.creator = 'SELECTUM HOME';
+    const ws = wb.addWorksheet('Pa darbiniekiem', { views: [{ state: 'frozen', xSplit: 2, ySplit: 3 }], pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 }, headerFooter: { oddFooter: '&LSELECTUM HOME&R© VAITKEVIX, SIA' } });
+    const n = T.days.length + 7; ws.columns = [{ width: 24 }, { width: 10 }].concat(T.days.map(() => ({ width: 4.6 })), [{ width: 8 }, { width: 7 }, { width: 5 }, { width: 5 }, { width: 7 }]);
+    ws.mergeCells(1, 1, 1, n); const t = ws.getCell(1, 1); t.value = 'Darba laika tabele pa darbiniekiem'; t.font = { bold: true, size: 16, color: { argb: 'FF17201C' } }; t.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5DBE3' } }; ws.getRow(1).height = 28;
+    ws.mergeCells(2, 1, 2, n); const st = ws.getCell(2, 1); st.value = 'Periods ' + lvS(T.no) + T.no.slice(0, 4) + '–' + lvS(T.lidz) + T.lidz.slice(0, 4) + ' · A atvaļinājums · B slimība · AB bezalgas · M mācības · X trūkst · SELECTUM HOME'; st.font = { size: 10, color: { argb: 'FF4A534F' } };
+    const hr = ws.getRow(3); ['Darbinieks', 'Amats'].concat(T.days.map(d => +d.d.slice(8)), ['Kopā h', 'Dienas', 'A', 'B', 'X']).forEach((v, i) => { const x = hr.getCell(i + 1); x.value = v; x.font = { bold: true, size: 9, color: { argb: 'FFFFFFFF' } }; x.alignment = { horizontal: i > 1 ? 'center' : 'left', vertical: 'middle' };
+      const d = T.days[i - 2]; x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: d && (d.w > 5 || d.sv) ? 'FF6D7672' : 'FF17201C' } }; }); hr.height = 20;
+    const FILL = { A: 'FFDCEBFA', AB: 'FFDCEBFA', M: 'FFDCEBFA', C: 'FFDCEBFA', B: 'FFFCE7D6', S: 'FFFCE7D6', X: 'FFFADBDB' };
+    darbRows().forEach((r, ri) => { const row = ws.addRow(r); row.eachCell((x, i) => { x.font = { size: 9, bold: i <= 1 }; x.border = { bottom: { style: 'thin', color: { argb: 'FFDFE5E2' } } }; if (i > 2) x.alignment = { horizontal: 'center' };
+      const d = T.days[i - 3]; if (d && FILL[x.value]) x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: FILL[x.value] } }; else if (d && (d.w > 5 || d.sv)) x.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F5F4' } }; if (typeof x.value === 'number' && i > 2) x.numFmt = '0.0'; }); });
+    const buf = await wb.xlsx.writeBuffer(), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    a.download = 'SH tabele darbinieki ' + T.no + ' ' + T.lidz + '.xlsx'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  } catch (err) { toast(err.message, 'err'); } finally { unbusy(btn); }
 }
 /* Excel pēc SH eksportu stila (sh-theme/eksports.md) */
 function loadX() { return window.ExcelJS ? Promise.resolve() : new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'; s.onload = res; s.onerror = () => rej(new Error('Neizdevās ielādēt Excel bibliotēku')); document.head.appendChild(s); }); }
