@@ -515,19 +515,35 @@ function tabDarbHtml() {
       <div style="font-size:38px;font-weight:800;letter-spacing:-.03em">${Hs(tot)}</div>
       <div class="kp" style="margin:8px 0 0"><div style="background:var(--surf)"><b style="font-size:20px">${R.reduce((n, r) => n + r.A, 0)}</b><span>d. atvaļinājumā (A)</span></div><div style="background:var(--surf)"><b style="font-size:20px">${R.reduce((n, r) => n + r.B, 0)}</b><span>d. slimo (B)</span></div><div style="background:var(--surf)"><b style="font-size:20px;color:${X ? 'var(--bad)' : 'inherit'}">${X}</b><span>d. trūkst (X)</span></div></div></div>
     <div class="legend2 tleg"><span><b class="lk k-a">A</b>atvaļinājums</span><span><b class="lk k-b">B</b>slimība</span><span><b class="lk k-a">AB · M · C</b>cita prombūtne</span><span><b class="lk k-x">X</b>trūkst</span><span><b class="lk k-sv"></b>svētki / brīvdiena</span></div>
-    <div class="card tbx td"><table class="tbl tdb"><thead><tr><th class="nm">Darbinieks</th>${T.days.map(d => `<th class="dc${d.w > 5 || d.sv ? ' we' : ''}">${+d.d.slice(8)}<small>${WD[d.w - 1]}</small></th>`).join('')}<th class="n">Kopā</th><th class="n">X</th></tr></thead><tbody>
-      ${R.map(r => `<tr><td class="nm"><b>${esc(r.vards || r.phone)}</b><small>${esc(AM[r.amats] || '')}${r.objekti.length ? ' · ' + esc(r.objekti[0]) + (r.objekti.length > 1 ? ' +' + (r.objekti.length - 1) : '') : ''}${r.navBeigu ? ' · <span class="r">' + r.navBeigu + ' bez STOP</span>' : ''}</small></td>${T.days.map(d => cell(r, d)).join('')}<td class="n">${Hs(r.min)}</td><td class="n${r.X ? ' r' : ''}">${r.X || ''}</td></tr>`).join('') || `<tr><td colspan="${T.days.length + 3}">Nav darbinieku</td></tr>`}
+    <div class="card tbx td"><table class="tbl tdb"><thead><tr><th class="nm">Darbinieks</th>${T.days.map(d => `<th class="dc${d.w > 5 || d.sv ? ' we' : ''}">${+d.d.slice(8)}<small>${WD[d.w - 1]}</small></th>`).join('')}<th class="n">Kopā</th><th class="n">Norma</th><th class="n">±</th><th class="n">X</th></tr></thead><tbody>
+      ${R.map(r => `<tr><td class="nm"><b>${esc(r.vards || r.phone)}</b><small>${esc(AM[r.amats] || '')}${r.objekti.length ? ' · ' + esc(r.objekti[0]) + (r.objekti.length > 1 ? ' +' + (r.objekti.length - 1) : '') : ''}${r.navBeigu ? ' · <span class="r">' + r.navBeigu + ' bez STOP</span>' : ''}</small></td>${T.days.map(d => cell(r, d)).join('')}<td class="n">${Hs(r.min)}${r.virs && r.virs.length ? `<span class="vw" title="${esc('Virsstundas: ' + r.virs.map(x => 'ned. no ' + lvS(x.no) + ' — ' + String(x.h).replace('.', ',') + ' h').join('; '))}"> ⚠</span>` : ''}</td><td class="n">${r.normaH != null ? r.normaH + ' h' : ''}</td><td class="n${r.min / 60 < (r.normaH || 0) ? ' r' : ''}">${r.normaH != null ? (Math.round((r.min / 60 - r.normaH) * 10) / 10).toLocaleString('lv-LV', { signDisplay: 'exceptZero' }) : ''}</td><td class="n${r.X ? ' r' : ''}">${r.X || ''}</td></tr>`).join('') || `<tr><td colspan="${T.days.length + 5}">Nav darbinieku</td></tr>`}
     </tbody></table></div>
+    ${R.some(r => r.virs && r.virs.length) ? `<div class="banner sand" style="margin-top:12px"><span class="dot">!</span><div><b>Virsstundas (nedēļā > 40 h): ${R.filter(r => r.virs && r.virs.length).length}</b><span>${esc(R.filter(r => r.virs && r.virs.length).slice(0, 4).map(r => (r.vards || r.phone) + ' ' + r.virs.map(x => String(x.h).replace('.', ',') + ' h').join(', ')).join(' · '))}</span></div></div>` : ''}
     <div class="row2" style="margin-top:12px"><button class="pill dk big" id="tdX">Excel</button><button class="pill big" id="tdC">CSV</button></div>
+    ${can(3) ? '<button class="pill big" id="tdPk" style="width:100%;margin-top:8px">Grāmatvedībai (ar personas kodu)</button>' : ''}
     <p style="text-align:center;font-size:13px;font-weight:700;color:var(--ink3)">Svētku dienas un apstiprināti atvaļinājumi / prombūtnes (Personāls) nav «trūkst»</p>`;
   $('tdX').onclick = (e) => xlsxDarb(e.target); $('tdC').onclick = () => csvDarb();
+  const pk = $('tdPk'); if (pk) pk.onclick = () => csvPk(pk);
 }
-function darbRows() { const T = S.TD; return T.rows.map(r => [r.vards || r.phone, AM[r.amats] || ''].concat(T.days.map(d => { const k = r.kods[d.d]; return k && k !== 'sv' ? k : r.h[d.d] ? Math.round(r.h[d.d] / 6) / 10 : ''; }), [Math.round(r.min / 6) / 10, r.dienas, r.A, r.B, r.X])); }
+function darbRows() { const T = S.TD; return T.rows.map(r => [r.vards || r.phone, AM[r.amats] || ''].concat(T.days.map(d => { const k = r.kods[d.d]; return k && k !== 'sv' ? k : r.h[d.d] ? Math.round(r.h[d.d] / 6) / 10 : ''; }), [Math.round(r.min / 6) / 10, r.dienas, r.A, r.B, r.X, r.normaH || 0, r.virsH || 0])); }
 function csvDarb() {
-  const T = S.TD, head = ['Darbinieks', 'Amats'].concat(T.days.map(d => lvS(d.d)), ['Kopā h', 'Dienas', 'A', 'B', 'Trūkst']);
+  const T = S.TD, head = ['Darbinieks', 'Amats'].concat(T.days.map(d => lvS(d.d)), ['Kopā h', 'Dienas', 'A', 'B', 'Trūkst', 'Norma h', 'Virsstundas h']);
   const q = (v) => { v = typeof v === 'number' ? String(v).replace('.', ',') : String(v == null ? '' : v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
   const txt = '\ufeff' + [head].concat(darbRows()).map(r => r.map(q).join(';')).join('\r\n'), a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); a.download = 'SH tabele darbinieki ' + T.no + ' ' + T.lidz + '.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+/* F-dl(3): grāmatvedībai — personas kods no Personāla (pēc vārda), stundas, norma, virsstundas, prombūtnes. Tikai adminam; ierakstās auditā */
+async function csvPk(btn) {
+  if (!confirm('Fails saturēs personas kodus. Glabājiet to drošā vietā. Turpināt?')) return;
+  busy(btn, 'Gatavo…');
+  try { const T = await api('tabeleDarb', { no: S.tNo, lidz: S.tLi, pk: 1 });
+    const head = ['Darbinieks', 'Personas kods', 'Amats', 'Darba dienas', 'Stundas', 'Norma h', 'Virsstundas h', 'Atvaļinājums d.', 'Slimība d.', 'Trūkst d.'];
+    const q = (v) => { v = typeof v === 'number' ? String(v).replace('.', ',') : String(v == null ? '' : v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const rows = T.rows.map(r => [r.vards || r.phone, r.pk || '', AM[r.amats] || '', r.dienas, Math.round(r.min / 6) / 10, r.normaH, r.virsH || 0, r.A, r.B, r.X]);
+    const txt = '\ufeff' + [head].concat(rows).map(r => r.map(q).join(';')).join('\r\n'), a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); a.download = 'SH gramatvedibai ' + T.no + ' ' + T.lidz + '.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    const miss = T.rows.filter(r => !r.pk).length; toast(miss ? 'Gatavs · bez personas koda: ' + miss + ' (nav Personālā)' : 'Gatavs');
+  } catch (err) { toast(err.message, 'err'); } finally { unbusy(btn); }
 }
 async function xlsxDarb(btn) {
   busy(btn, 'Gatavo…');
